@@ -31,7 +31,10 @@ function selectMatch()
 {
     var e = document.getElementById("matchBox");
     var matchID = e.options[e.selectedIndex].value;
-    console.log(matchID)
+    d3.json("data/"+matchID+".js", function(error, data) {
+        console.log(error);
+    });
+    console.log("file:data/"+matchID+".js")
 }
 
 function draw_points()
