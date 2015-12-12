@@ -27,6 +27,13 @@ function draw_geoplot()
 	// draw_legend();
 }
 
+function selectMatch()
+{
+    var e = document.getElementById("matchBox");
+    var matchID = e.options[e.selectedIndex].value;
+    console.log(matchID)
+}
+
 function draw_points()
 {
 	if (firstLoad) {
