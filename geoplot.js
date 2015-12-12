@@ -1,3 +1,5 @@
+var firstLoad = true;
+
 var geoplotSvg = d3.select("#geoplot").select("svg")
     .attr("width", viewWidth)
     .attr("height", viewHeight)
@@ -27,7 +29,10 @@ function draw_geoplot()
 
 function draw_points()
 {
-	setTimeout(function() {}, 3000); // check again in a second
+	if (firstLoad) {
+		setTimeout(function() {}, 3000); // check again in a second
+		firstLoad = false;
+	}
 
 	geoplotSvg.selectAll("circle").remove();
 
@@ -39,7 +44,16 @@ function draw_points()
     	.range([-5, viewWidth - 5]);
  	var geoY = d3.scale.linear()
 		.domain([0, 125])
-	    .range([viewHeight - 10, 0]);
+	    .range([viewHeight - 10, -10]);
+	var opacityTimeScale = d3.scale.linear()
+		.domain([d3.min(data, function(d) { return d.tsync; }), d3.max(data, function(d) { return d.tsync; })])
+		.range([0.2, 1.0]);
+	var colorRadiant = d3.scale.linear()
+		.domain([d3.min(data, function(d) { return d.tsync; }), d3.max(data, function(d) { return d.tsync; })])
+    	.range(["red", "blue", "yellow"]);
+    var colorDire = d3.scale.linear()
+		.domain([d3.min(data, function(d) { return d.tsync; }), d3.max(data, function(d) { return d.tsync; })])
+    	.range(["green", "violet", "orange"]);
 
 	points.enter()
 		.append("circle")
@@ -50,8 +64,14 @@ function draw_points()
 		.attr("cy", function(d) { return geoY(parseInt(d.y)); })
 		.attr("r", 2)
 		.style("stroke", "black")
-		.style("fill", function(d) { if (d.team == "radiant") return "white"; else return "red"; })
-		.style("opacity", 0.5);
+		.style("fill", function(d) {
+			if (d.team == "radiant") {
+				return colorRadiant(d.tsync);
+			} else {
+				return colorDire(d.tsync);
+			}
+		})
+		.style("opacity", function(d) { return opacityTimeScale(d.tsync); });
 }
 
 function draw_boats()
