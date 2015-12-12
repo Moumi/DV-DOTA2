@@ -58,18 +58,5 @@ function resize() {
 }
 
 
-function fill_combobox() {
-	var select = document.getElementById("matchBox");
-	for(var i = 0; i < matches.length; i++) {
-            var opt = matches[i];
-            var el = document.createElement("option");
-            el.textContent = opt;
-            el.value = opt;
-            select.appendChild(el);
-	}
-	select.selectedIndex = 0;
-}
-
-fill_combobox()
 //resize();
 d3.select(window).on("resize", resize);
