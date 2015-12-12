@@ -75,6 +75,7 @@ function createjsfile(filename, filetype){
         var fileref=document.createElement('script')
         fileref.setAttribute("type","text/javascript")
         fileref.setAttribute("src", filename)
+        fileref.setAttribute("id", "current_script")
     }
     return fileref
 }
@@ -82,6 +83,7 @@ function createjsfile(filename, filetype){
 function replacejsfile(oldfilename, newfilename, filetype){
     var targetelement=(filetype=="js")? "script" : (filetype=="css")? "link" : "none" //determine element type to create nodelist using
     var targetattr=(filetype=="js")? "src" : (filetype=="css")? "href" : "none" //determine corresponding attribute to test for
+    
     var allsuspects=document.getElementsByTagName(targetelement)
     for (var i=allsuspects.length; i>=0; i--){ //search backwards within nodelist for matching elements to remove
         if (allsuspects[i] && allsuspects[i].getAttribute(targetattr)!=null && allsuspects[i].getAttribute(targetattr).indexOf(oldfilename)!=-1){
@@ -89,6 +91,17 @@ function replacejsfile(oldfilename, newfilename, filetype){
             allsuspects[i].parentNode.replaceChild(newelement, allsuspects[i])
         }
     }
+}
+
+var tempMatch = data[0].match;
+function waitForDataLoad() {
+	if (data[0].match != tempMatch) {
+    	tempMatch = data[0].match;
+    	draw_geoplot();
+    	console.log(tempMatch);
+    } else {
+       	setTimeout(waitForDataLoad, 100);
+    }
 }
 
 function update_data()
@@ -115,6 +128,34 @@ function update_data()
     	draw_geoplot();
  	});
 }
+
+
+function fill_combobox() {
+	var select = document.getElementById("matchBox");
+	for(var i = 0; i < matches.length; i++) {
+            var option = matches[i];
+            var element = document.createElement("option");
+            element.textContent = option;
+            element.value = option;
+            select.appendChild(element);
+	}
+	select.selectedIndex = 0;
+}
+
+function select_match()
+{
+    var e = document.getElementById("matchBox");
+    var matchID = e.options[e.selectedIndex].value;
+    var currentMatch = 'data/'+document.getElementById("current_script").src;
+    currentMatch = currentMatch.split('data/')[2];
+    console.log(currentMatch);
+    replacejsfile(currentMatch, 'data/'+matchID+'.js', 'js');
+    waitForDataLoad();
+    console.log(document.getElementById("current_script").src);
+}
+
+fill_combobox();
+select_match();
 
 document.getElementById("btn_background").innerText = button_caption1;  //Works in Chrome and IE, but not in Firefox
 document.getElementById("btn_background").textContent = button_caption1;//Right way to do it, but might not work in IE

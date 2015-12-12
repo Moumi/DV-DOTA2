@@ -32,7 +32,7 @@ for i in range(1,48):
 
 # Write a matches.js file which contains the names of all matches (to be read by combobox).
 with open('data/matches.js', 'w') as outfile:
-    outfile.write("data = ")
+    outfile.write("matches = ")
     json.dump(matches.keys(), outfile)
 
 # write match data of each match to a seperate file.
