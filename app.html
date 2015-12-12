@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<meta charset="ISO-8859-1"> 
 <html>
 	<head>
 		<title></title>
@@ -17,6 +18,13 @@
 			 		<button id="btn_data" onclick="update_data()"></button>
 				</div>
    			</div>
+                        <div class="container">
+                                <div id="matchesbox">
+                                        match: 
+                                        <select id="matchBox" onchange="select_match()">
+                                        </select>
+                                </div>
+                        </div>
 		</div>
 		<div id="scatterplot">
    			<svg></svg>
@@ -63,7 +71,8 @@
 		</div>
    		</div>
 		
-		<script type="text/javascript" src="data/master-zones-1-0.js"></script>	
+		<script type="text/javascript" src="data/master-zones-1-0.js" id="current_script"></script>
+		<script type="text/javascript" src="data/matches.js"></script>	
 		<script type="text/javascript" src="setup.js"></script>
 		<!-- // <script type="text/javascript" src="scatterplot.js"></script> -->
 		<!-- // <script type="text/javascript" src="histogram.js"></script> -->

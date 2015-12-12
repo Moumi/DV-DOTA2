@@ -57,5 +57,6 @@ function resize() {
   // resizeHistogram();
 }
 
+
 //resize();
 d3.select(window).on("resize", resize);
