@@ -5,8 +5,6 @@ var margin = {top: 15, right: 15, bottom: 50, left: 15};
 var viewWidth = windowWidth/3 - margin.left - margin.right;
 var viewHeight = windowHeight - margin.top - margin.bottom;
 
-alert("A: " + viewWidth);
-
 var scatterplot = d3.select("#scatterplot")
     .style("float", "left")
   .select("svg")

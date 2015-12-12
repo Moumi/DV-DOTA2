@@ -2,16 +2,12 @@ var geoplotSvg = d3.select("#geoplot").select("svg")
     .attr("width", viewWidth)
     .attr("height", viewHeight)
 
-alert(viewWidth);
-
  var geoX = d3.scale.linear()
 	.domain([0, 125])
     .range([0, viewWidth]);
  var geoY = d3.scale.linear()
 	.domain([0, 125])
     .range([viewHeight, 0]);
-
- alert(0 + " - " + geoY(0));
 
 var speedColorMap = d3.scale.linear()
 	.domain([0, 25, 50])
@@ -31,14 +27,25 @@ function draw_geoplot()
 
 function draw_points()
 {
+	setTimeout(function() {}, 3000); // check again in a second
+
 	geoplotSvg.selectAll("circle").remove();
 
 	var points = geoplotSvg.selectAll("circle")
 		.data(data);
 
+	var geoX = d3.scale.linear()
+		.domain([0, 125])
+    	.range([-5, viewWidth - 5]);
+ 	var geoY = d3.scale.linear()
+		.domain([0, 125])
+	    .range([viewHeight - 10, 0]);
+
 	points.enter()
 		.append("circle")
 		.attr("class", "unit")
+		.attr("oldX", function(d) { return d.x; })
+		.attr("oldY", function(d) { return d.y; })
 		.attr("cx", function(d) { return geoX(parseInt(d.x)); })
 		.attr("cy", function(d) { return geoY(parseInt(d.y)); })
 		.attr("r", 2)
