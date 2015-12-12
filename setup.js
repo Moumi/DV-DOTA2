@@ -26,6 +26,8 @@ var histogram = d3.select("#histogram")
     .attr("height", viewHeight)
     .append("g");
 
+
+
 function resize() {
   
   console.log("resize");

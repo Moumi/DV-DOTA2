@@ -96,23 +96,29 @@ function update_data()
 	var elem = document.getElementById("btn_data");
 		
 	var caption = elem.textContent || elem.innerText; //to make sure it works in every browser
-	
+	var zoneData = "";
+
     if (caption==button_data1) {
 		elem.innerText = button_data2;   //Works in Chrome and IE, but not in Firefox
 		elem.textContent = button_data2; //Right way to do it, but might not work in IE
-		replacejsfile("data/master-zones-1-1.js", "data/master-zones-1-0.js", "js");
+		zoneData = "data/master-zones-1-0.js";
+		replacejsfile("data/master-zones-1-1.js", zoneData, "js");
 	} else {
 		elem.innerText = button_data1;   //Works in Chrome and IE, but not in Firefox
 		elem.textContent = button_data1; //Right way to do it, but might not work in IE
-		replacejsfile("data/master-zones-1-0.js", "data/master-zones-1-1.js", "js");
+		zoneData = "data/master-zones-1-1.js";
+		replacejsfile("data/master-zones-1-0.js", zoneData, "js");
 	}
 
-	draw_geoplot();
+	$.getScript("http://localhost:8080/" + zoneData, function() {
+    	// alert("Script loaded and executed.");
+    	draw_geoplot();
+ 	});
 }
 
 document.getElementById("btn_background").innerText = button_caption1;  //Works in Chrome and IE, but not in Firefox
 document.getElementById("btn_background").textContent = button_caption1;//Right way to do it, but might not work in IE
-document.getElementById("btn_data").innerText = button_data1;  //Works in Chrome and IE, but not in Firefox
-document.getElementById("btn_data").textContent = button_data1;//Right way to do it, but might not work in IE
+document.getElementById("btn_data").innerText = button_data2;  //Works in Chrome and IE, but not in Firefox
+document.getElementById("btn_data").textContent = button_data2;//Right way to do it, but might not work in IE
 
 draw_background();
