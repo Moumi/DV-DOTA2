@@ -29,6 +29,10 @@ for i in range(1,48):
                         else:
                             break
 
+with open('data/matches.js', 'w') as outfile:
+    outfile.write("data = ")
+    json.dump(matches.keys(), outfile)
+
 for match in matches:
     with open('data/'+str(match)+'.js', 'w') as outfile:
         outfile.write("data = ")
