@@ -18,11 +18,6 @@ svg {
   display: none;
 }*/
 
-.dot {
-  stroke-width: 0.25pt;
-  stroke: #555;
-}
-
 select {
 	margin: 5px;
 }
@@ -33,4 +28,10 @@ select {
 
 #selectionUI {
   display: inline-block;
+}
+
+.brush .extent {
+  stroke: #fff;
+  fill-opacity: .125;
+  shape-rendering: crispEdges;
 }

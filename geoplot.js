@@ -110,7 +110,7 @@ function draw_lines() {
 	for (var k in playerNestData) {
 		i++;
 		var prevY = -1, prevX = -1;
-		console.log("Player: " + k + " => " + playerNestData[k].values.length);
+		//console.log("Player: " + k + " => " + playerNestData[k].values.length);
 
 		// Data sorted on the player names and then selected timeframe
 		var dataSorted = playerNestData[k].values.sort(function(a,b) { 
@@ -128,9 +128,9 @@ function draw_lines() {
         	.attr("d", function(d, i) {
         		 var p1 = dataSorted[i]; var p2 = dataSorted[i+1];
         		if (p2 != undefined) {
-        			if (Math.abs(parseInt(p1.x) - parseInt(p2.x)) > 40 || Math.abs(parseInt(p1.y) - parseInt(p2.y)) > 40)
-        				console.log("xxx");
-        			else
+        			/*if (Math.abs(parseInt(p1.x) - parseInt(p2.x)) > 40 || Math.abs(parseInt(p1.y) - parseInt(p2.y)) > 40)
+        				//console.log("xxx");
+        			else*/
         				return line([p1, p2]);
         		}
         	})
@@ -147,8 +147,8 @@ function draw_lines() {
         		if (p2 != undefined) {
         			if (Math.abs(parseInt(p1.x) - parseInt(p2.x)) > 40 || Math.abs(parseInt(p1.y) - parseInt(p2.y)) > 40)
 						return line([p1, p2]);
-        			else
-        				console.log("xxx");
+        			//else
+        				//console.log("xxx");
         		}
         	})
         	.attr("stroke", colorShit[i])
