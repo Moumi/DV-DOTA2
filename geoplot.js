@@ -15,18 +15,37 @@ var speedColorMap = d3.scale.linear()
 	.domain([0, 25, 50])
 	.range(["green", "yellow", "red"]);
 
- function speed(d)
-{
-	return Math.sqrt(d.u*d.u+d.v*d.v);
+var domain = [0, 10, 100, 500, 1000, 2000, 3000, 10000];
+var colorScale = d3.scale.quantize().domain(domain).range(["red","orange","green", "white", "orange"]);
+
+function hashCode(str) { // java String#hashCode
+    var hash = 0;
+    for (var i = 0; i < str.length; i++) {
+       hash = str.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    return hash;
+} 
+
+function intToRGB(i){
+    var c = (i & 0x00FFFFFF)
+        .toString(16)
+        .toUpperCase();
+
+    return "00000".substring(0, 6 - c.length) + c;
 }
 
-function draw_geoplot()
-{		
+function speed(d) {
+	return Math.sqrt(d.u * d.u + d.v * d.v);
+}
+
+function draw_geoplot() {		
 	draw_points();
+	draw_lines();
 	// draw_boats();
 	// draw_legend();
 }
 
+var startT = 0, endT = 120;
 function draw_points()
 {
 	if (firstLoad) {
@@ -39,39 +58,95 @@ function draw_points()
 	var points = geoplotSvg.selectAll("circle")
 		.data(data);
 
-	var geoX = d3.scale.linear()
+	var minTSync = d3.min(data, function(d) { return d.tsync; });
+	var maxTSync = d3.max(data, function(d) { return d.tsync; });
+
+	geoX = d3.scale.linear()
 		.domain([0, 125])
     	.range([-5, viewWidth - 5]);
- 	var geoY = d3.scale.linear()
+ 	geoY = d3.scale.linear()
 		.domain([0, 125])
 	    .range([viewHeight - 10, -10]);
-	var opacityTimeScale = d3.scale.linear()
-		.domain([d3.min(data, function(d) { return d.tsync; }), d3.max(data, function(d) { return d.tsync; })])
-		.range([0.2, 1.0]);
-	var colorRadiant = d3.scale.linear()
-		.domain([d3.min(data, function(d) { return d.tsync; }), d3.max(data, function(d) { return d.tsync; })])
-    	.range(["red", "blue", "yellow"]);
-    var colorDire = d3.scale.linear()
-		.domain([d3.min(data, function(d) { return d.tsync; }), d3.max(data, function(d) { return d.tsync; })])
-    	.range(["green", "violet", "orange"]);
 
 	points.enter()
 		.append("circle")
-		.attr("class", "unit")
-		.attr("oldX", function(d) { return d.x; })
-		.attr("oldY", function(d) { return d.y; })
-		.attr("cx", function(d) { return geoX(parseInt(d.x)); })
-		.attr("cy", function(d) { return geoY(parseInt(d.y)); })
-		.attr("r", 2)
-		.style("stroke", "black")
-		.style("fill", function(d) {
-			if (d.team == "radiant") {
-				return colorRadiant(d.tsync);
-			} else {
-				return colorDire(d.tsync);
-			}
-		})
-		.style("opacity", function(d) { return opacityTimeScale(d.tsync); });
+			.filter(function(d) {
+				return d.tsync >= startT && d.tsync <= endT;
+			})
+			.attr("class", "unit")
+			.attr("oldX", function(d) { return d.x; })
+			.attr("oldY", function(d) { return d.y; })
+			.attr("cx", function(d) { return geoX(parseInt(d.x)); })
+			.attr("cy", function(d) { return geoY(parseInt(d.y)); })
+			.attr("r", 2)
+			.style("stroke", "black")
+			.style("fill", function(d) {
+				if (d.team == "radiant") {
+					return intToRGB(hashCode(d.player));
+				} else {
+					return intToRGB(hashCode(d.player));
+				}
+			})
+			.style("opacity", function(d) { return 1.0; });
+}
+
+function draw_lines() {
+	// begin of drawing lines
+	var line = d3.svg.line()
+	    .x(function(d){return geoX(parseInt(d.x));})
+	    .y(function(d){return geoY(parseInt(d.y));})
+	    .interpolate("basis");
+
+	var playerNestData = d3.nest()
+		.key(function(d) { return d.player; })
+		.entries(data);
+
+	var paths = geoplotSvg.selectAll("path")
+		.data(playerNestData);
+
+	geoplotSvg.selectAll(".line").remove();
+	var colorShit = ["red", "blue", "white", "violet", "black", "orange", "green", "purple", "pink", "brown", "white", "white"];
+	var i = 0;
+	for (var k in playerNestData) {
+		i++;
+		var prevY = -1, prevX = -1;
+		console.log("Player: " + k + " => " + playerNestData[k].values.length);
+
+		// Data sorted on the player names and then selected timeframe
+		var dataSorted = playerNestData[k].values.sort(function(a,b) { 
+            return a.player - b.player;
+        }).filter(function(d) {
+        	if (d.tsync >= startT && d.tsync <= endT) {
+            	return true;
+	        }
+        });
+
+		geoplotSvg.append("g")
+			.append("path")
+            .attr("d", line(dataSorted))
+            .attr("class", "line")
+            .style("stroke-width", 2)
+            .style("stroke", colorShit[i])
+            .style("stroke-dasharray", dataSorted.filter(function(d) {
+            	if (prevY == -1 && prevX == -1) {
+            		prevY = parseInt(d.y);
+            		prevX = parseInt(d.x);
+            	}
+
+            	if ((parseInt(d.x) - prevX) > 40 || (parseInt(d.y) - prevY) > 40)
+            		return "(3,3)";
+            	return "(3,0)";
+            	// console.log("Ghehe: " + d);
+            }))
+            .style("fill", "none")
+            .style("stroke-opacity", "0.5");
+	}
+}
+
+function distance(d, prevX, prevY) {
+	var x_ = Math.pow(Math.abs(parseInt(d.x) - prevX), 2);
+	var y_ = Math.pow(Math.abs(parseInt(d.y) - prevY), 2);
+	return Math.sqrt(x_ + y_);
 }
 
 function draw_boats()
