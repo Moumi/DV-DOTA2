@@ -52,7 +52,7 @@ function resize() {
   	.selectAll("select")
     .style("width", viewWidth/4.5+"px");
   
-  // resizeScatterplot();
+  resizeScatterplot();
   resizeGeoplot();
   // resizeHistogram();
 }

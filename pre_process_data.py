@@ -4,10 +4,15 @@ import json
 
 max_output_files = 5;
 
-def get_entry(row, headers, value_ids):
+def get_entry(row, headers, value_ids, types):
 	entry = {}
 	for i in value_ids:
-		entry[headers[i]] = row[i]
+            if types[i] == 'int':
+		entry[headers[i]] = int(float(row[i]))
+            elif types[i] == 'float':
+                entry[headers[i]] = float(row[i])
+            elif types[i] == 'string':
+                entry[headers[i]] = str(row[i])
 	return entry
 
 # Read match data from csv
@@ -20,13 +25,14 @@ for i in range(1,48):
 		reader = csv.reader(csvfile)
 		headers = reader.next()
 		value_ids = range(0,len(headers))
+		types = ['int', 'int', 'int', 'int' ,'string', 'string', 'int', 'int', 'int', 'float', 'string', 'string']
 		value_ids.remove(3)
 
 		for row in reader:
 			if matches.has_key(row[3]):
-				matches[row[3]].append(get_entry(row, headers, value_ids))
+				matches[row[3]].append(get_entry(row, headers, value_ids, types))
 			elif len(matches.keys()) < max_output_files:
-				matches[row[3]] = [get_entry(row, headers, value_ids)]
+				matches[row[3]] = [get_entry(row, headers, value_ids, types)]
                         else:
                             break
 
@@ -44,16 +50,21 @@ for match in matches:
 # Read master distance data from csvfile
 master_distance = dict()
 for match in matches:
-    master_distance[match] = []
+    master_distance[match] = dict()
 
 with open('master-distance/master-distance.csv', 'rb') as csvfile:
     reader = csv.reader(csvfile)
-    headers = reader.next()
-    value_ids = range(0,len(headers))
-    value_ids.remove(0)
+    headers = reader.next() #[match   team   tsync   DD   Tier   Win Lose]
+    types = ['int', 'string', 'int', 'float', 'string', 'int']
+    #value_ids = range(0,len(headers))
+    #value_ids.remove(0)
+    value_ids = [2,3]
     for row in reader:
         if master_distance.has_key(row[0]):
-                master_distance[row[0]].append(get_entry(row, headers, value_ids))
+            if master_distance[row[0]].has_key(row[1]):
+                master_distance[row[0]][row[1]].append(get_entry(row, headers, value_ids, types))
+            else:
+                master_distance[row[0]][row[1]] = [get_entry(row, headers, value_ids, types)]
 
 # write master-distance data of each match to a seperate file.
 for match in master_distance:
