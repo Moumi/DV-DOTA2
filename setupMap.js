@@ -1,9 +1,6 @@
 var button_caption1 = "Use satellite image";
 var button_caption2 = "Use map image";
 
-var button_data1 = "Use 1-0";
-var button_data2 = "Use 1-1";
-
 function draw_background()
 {
 	var vis   = d3.select("#geoplot").select("svg")
@@ -93,43 +90,26 @@ function replacejsfile(oldfilename, newfilename, filetype, id){
     }
 }
 
-var tempPlayer = data[0].player; var tempT = data[0].t;
-function waitForDataLoad() {
-	if (data[0].player != tempPlayer && data[0].t != tempT) {
-    	tempPlayer = data[0].player;
-    	tempT = data[0].t;
-    	draw_geoplot();
-        drawScatterplot();
-    } else {
-       	setTimeout(waitForDataLoad, 100);
-    }
-}
+var tempPlayer = data[0].player; var tempT = data[0].t;
 
-function update_data()
-{
-	var elem = document.getElementById("btn_data");
-		
-	var caption = elem.textContent || elem.innerText; //to make sure it works in every browser
-	var zoneData = "";
+function waitForDataLoad() {
 
-    if (caption==button_data1) {
-		elem.innerText = button_data2;   //Works in Chrome and IE, but not in Firefox
-		elem.textContent = button_data2; //Right way to do it, but might not work in IE
-		zoneData = "data/master-zones-1-0.js";
-		replacejsfile("data/master-zones-1-1.js", zoneData, "js");
-	} else {
-		elem.innerText = button_data1;   //Works in Chrome and IE, but not in Firefox
-		elem.textContent = button_data1; //Right way to do it, but might not work in IE
-		zoneData = "data/master-zones-1-1.js";
-		replacejsfile("data/master-zones-1-0.js", zoneData, "js");
-	}
+	if (data[0].player != tempPlayer && data[0].t != tempT) {
 
-	$.getScript("http://localhost:8080/" + zoneData, function() {
-    	// alert("Script loaded and executed.");
+    	tempPlayer = data[0].player;
+
+    	tempT = data[0].t;
+
     	draw_geoplot();
- 	});
-}
 
+        drawScatterplot();
+    } else {
+
+       	setTimeout(waitForDataLoad, 100);
+
+    }
+
+}
 
 function fill_combobox() {
 	var select = document.getElementById("matchBox");
@@ -164,7 +144,5 @@ select_match();
 
 document.getElementById("btn_background").innerText = button_caption1;  //Works in Chrome and IE, but not in Firefox
 document.getElementById("btn_background").textContent = button_caption1;//Right way to do it, but might not work in IE
-document.getElementById("btn_data").innerText = button_data2;  //Works in Chrome and IE, but not in Firefox
-document.getElementById("btn_data").textContent = button_data2;//Right way to do it, but might not work in IE
 
 draw_background();
