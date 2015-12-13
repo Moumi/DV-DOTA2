@@ -70,35 +70,36 @@ function update_background()
 	// resizeGeoplot();
 }
 
-function createjsfile(filename, filetype){
+function createjsfile(filename, filetype, id){
     if (filetype=="js"){ //if filename is a external JavaScript file
         var fileref=document.createElement('script')
         fileref.setAttribute("type","text/javascript")
         fileref.setAttribute("src", filename)
-        fileref.setAttribute("id", "current_script")
+        fileref.setAttribute("id", id)
     }
     return fileref
 }
 
-function replacejsfile(oldfilename, newfilename, filetype){
+function replacejsfile(oldfilename, newfilename, filetype, id){
     var targetelement=(filetype=="js")? "script" : (filetype=="css")? "link" : "none" //determine element type to create nodelist using
     var targetattr=(filetype=="js")? "src" : (filetype=="css")? "href" : "none" //determine corresponding attribute to test for
     
     var allsuspects=document.getElementsByTagName(targetelement)
     for (var i=allsuspects.length; i>=0; i--){ //search backwards within nodelist for matching elements to remove
         if (allsuspects[i] && allsuspects[i].getAttribute(targetattr)!=null && allsuspects[i].getAttribute(targetattr).indexOf(oldfilename)!=-1){
-            var newelement=createjsfile(newfilename, filetype)
-            allsuspects[i].parentNode.replaceChild(newelement, allsuspects[i])
+            var newDataElement=createjsfile(newfilename, filetype, id)
+            allsuspects[i].parentNode.replaceChild(newDataElement, allsuspects[i])
         }
     }
 }
 
-var tempMatch = data[0].match;
+var tempPlayer = data[0].player; var tempT = data[0].t;
 function waitForDataLoad() {
-	if (data[0].match != tempMatch) {
-    	tempMatch = data[0].match;
+	if (data[0].player != tempPlayer && data[0].t != tempT) {
+    	tempPlayer = data[0].player;
+    	tempT = data[0].t;
     	draw_geoplot();
-    	console.log(tempMatch);
+        drawScatterplot();
     } else {
        	setTimeout(waitForDataLoad, 100);
     }
@@ -146,12 +147,16 @@ function select_match()
 {
     var e = document.getElementById("matchBox");
     var matchID = e.options[e.selectedIndex].value;
-    var currentMatch = 'data/'+document.getElementById("current_script").src;
+    // replace data file
+    var currentMatch = 'data/'+document.getElementById("current_data").src;
     currentMatch = currentMatch.split('data/')[2];
-    console.log(currentMatch);
-    replacejsfile(currentMatch, 'data/'+matchID+'.js', 'js');
+    replacejsfile(currentMatch, 'data/'+matchID+'.js', 'js', 'current_data');
     waitForDataLoad();
-    console.log(document.getElementById("current_script").src);
+    // replace distance file
+    var currentMatch = 'data/'+document.getElementById("current_distance").src;
+    currentMatch = currentMatch.split('data/')[2];
+    replacejsfile(currentMatch, 'data/'+matchID+'_master-distance.js', 'js', 'current_distance');
+    waitForDataLoad();
 }
 
 fill_combobox();
