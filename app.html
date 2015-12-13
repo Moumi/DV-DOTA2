@@ -28,53 +28,17 @@
 		</div>
 		<div id="scatterplot">
    			<svg></svg>
-   			<div class="container">
-				<div id="scatterplotSelectionUI">
-					x:
-					<select id="xAxisItem" onchange="selectVariable(0)">
-						<option value="x" selected="selected">Latitudinal Position</option>
-						<option value="y">Longitudinal Position</option>
-						<option value="u">Latitudinal Velocity</option>
-						<option value="v">Longitudinal Velocity</option>
-						<option value="m">Velocity Error</option>
-						<option value="a">Directional Error</option>
-					</select>
-					y:
-					<select id="yAxisItem" onchange="selectVariable(1)">
-						<option value="x">Latitudinal Position</option>
-						<option value="y" selected="selected">Longitudinal Position</option>
-						<option value="u">Latitudinal Velocity</option>
-						<option value="v">Longitudinal Velocity</option>
-						<option value="m">Velocity Error</option>
-						<option value="a">Directional Error</option>
-					</select>
-					c:
-					<select id="colorItem" onchange="selectVariable(2)">
-						<option value="x">Latitudinal Position</option>
-						<option value="y">Longitudinal Position</option>
-						<option value="u">Latitudinal Velocity</option>
-						<option value="v">Longitudinal Velocity</option>
-						<option value="m">Velocity Error</option>
-						<option value="a" selected="selected">Directional Error</option>
-					</select>
-				</div>
-			</div>
    		</div>
    		<div id="histogram">
    			<svg></svg>
-   			<div class="container">
-   				<div id="histogramUI">
-					<form>#Bins: <input id="numBins" type="number" min="4" max="360" value = "18" onchange="setNumberOfBins()">
-					</form>
-				</div>
-   			</div>
 		</div>
    		</div>
 		
-		<script type="text/javascript" src="data/master-zones-1-0.js" id="current_script"></script>
+		<script type="text/javascript" src="data/master-zones-1-0.js" id="current_data"></script>
+		<script type="text/javascript" src="data/569649581_master-distance.js" id="current_distance"></script>
 		<script type="text/javascript" src="data/matches.js"></script>	
 		<script type="text/javascript" src="setup.js"></script>
-		<!-- // <script type="text/javascript" src="scatterplot.js"></script> -->
+		<script type="text/javascript" src="scatterplot.js"></script>
 		<!-- // <script type="text/javascript" src="histogram.js"></script> -->
 		<script type="text/javascript" src="setupMap.js"></script>
 		<script type="text/javascript" src="geoplot.js"></script>
