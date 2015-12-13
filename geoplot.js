@@ -120,8 +120,43 @@ function draw_lines() {
             	return true;
 	        }
         });
+        
+        geoplotSvg.append("g").selectAll(".line")
+        	.data(dataSorted)
+        	.enter().append("path")
+        	.attr("class", "line")
+        	.attr("d", function(d, i) {
+        		 var p1 = dataSorted[i]; var p2 = dataSorted[i+1];
+        		if (p2 != undefined) {
+        			if (Math.abs(parseInt(p1.x) - parseInt(p2.x)) > 40 || Math.abs(parseInt(p1.y) - parseInt(p2.y)) > 40)
+        				console.log("xxx");
+        			else
+        				return line([p1, p2]);
+        		}
+        	})
+        	.attr("stroke", colorShit[i])
+			.attr("stroke-width", 2)
+			.attr("fill", "none"); 
+    
+        geoplotSvg.append("g").selectAll(".line")
+        	.data(dataSorted)
+        	.enter().append("path")
+        	.attr("class", "line")
+        	.attr("d", function(d, i) {
+        		 var p1 = dataSorted[i]; var p2 = dataSorted[i+1];
+        		if (p2 != undefined) {
+        			if (Math.abs(parseInt(p1.x) - parseInt(p2.x)) > 40 || Math.abs(parseInt(p1.y) - parseInt(p2.y)) > 40)
+        				return line([p1, p2]);
+        			else
+        				console.log("xxx");
+        		}
+        	})
+        	.attr("stroke", colorShit[i])
+			.attr("stroke-width", 2)
+			.attr("fill", "none")
+                        .style("stroke-dasharray", "5, 10");
 
-		geoplotSvg.append("g")
+	/*	geoplotSvg.append("g")
 			.append("path")
             .attr("d", line(dataSorted))
             .attr("class", "line")
@@ -134,12 +169,13 @@ function draw_lines() {
             	}
 
             	if ((parseInt(d.x) - prevX) > 40 || (parseInt(d.y) - prevY) > 40)
-            		return "(3,3)";
-            	return "(3,0)";
+            		return "50,50";
+            	return "50,50";
             	// console.log("Ghehe: " + d);
             }))
+            //.style("stroke-dasharray", "10, 10")
             .style("fill", "none")
-            .style("stroke-opacity", "0.5");
+            .style("stroke-opacity", "0.5"); */
 	}
 }
 
