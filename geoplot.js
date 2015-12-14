@@ -40,10 +40,7 @@ function speed(d) {
 
 function draw_geoplot() {	
 	init();	
-	// draw_points();
 	draw_lines();
-	// draw_boats();
-	// draw_legend();
 }
 
 function init(){
@@ -56,37 +53,6 @@ function init(){
 }
 
 var startT = 0, endT = 120;
-function draw_points()
-{
-	if (firstLoad) {
-		setTimeout(function() {}, 3000); // check again in a second
-		firstLoad = false;
-	}
-
-	geoplotSvg.selectAll("circle").remove();
-
-	var points = geoplotSvg.selectAll("circle")
-		.data(data);
-
-	points.enter()
-		.append("circle")
-			.filter(function(d) {
-				return d.tsync >= startT && d.tsync <= endT;
-			})
-			.attr("class", "unit")
-			.attr("cx", function(d) { return geoX(parseInt(d.x)); })
-			.attr("cy", function(d) { return geoY(parseInt(d.y)); })
-			.attr("r", 2)
-			.style("stroke", "black")
-			.style("fill", function(d) {
-				if (d.team == "radiant") {
-					return intToRGB(hashCode(d.player));
-				} else {
-					return intToRGB(hashCode(d.player));
-				}
-			})
-			.style("opacity", function(d) { return 1.0; });
-}
 
 function marker_start(color, val) 
 {
