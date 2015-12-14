@@ -10,35 +10,30 @@
 	<body>
 		
 		<div class="container">
-   		<div id="geoplot">
-   			<svg></svg>
-   			<div class="container">
-   				<div id="geoUI">
-			 		<button id="btn_background" onclick="update_background()"></button>
-				</div>
-   			</div>
-                        <div class="container">
-                                <div id="matchesbox">
-                                        match: 
-                                        <select id="matchBox" onchange="select_match()">
-                                        </select>
-                                </div>
-                        </div>
-		</div>
-		<div id="scatterplot">
-   			<svg></svg>
-   		</div>
-   		<div id="histogram">
-   			<svg></svg>
-		</div>
+	   		<div id="geoplot">
+	   			<svg></svg>
+	   			<div class="container">
+					<div id="matchesbox">
+						match: 
+						<select id="matchBox" onchange="select_match()"></select>
+	                </div>
+	            </div>
+			</div>
+			<div id="scatterplot">
+	   			<svg></svg>
+	   		</div>
+	   		<div id="heatmap">
+	   			<svg></svg>
+			</div>
    		</div>
 		
-		<script type="text/javascript" src="data/master-zones-1-0.js" id="current_data"></script>
-		<script type="text/javascript" src="data/569649581_master-distance.js" id="current_distance"></script>
+		<script id="heatmapData" type="text/javascript" src="data/heatmap/580607270.js"></script>
+		<script id="current_data" type="text/javascript" src="data/geoplot/580607270.js"></script>
+		<script id="current_distance" type="text/javascript" src="data/distance/569649581_master-distance.js"></script>
 		<script type="text/javascript" src="data/matches.js"></script>	
 		<script type="text/javascript" src="setup.js"></script>
 		<script type="text/javascript" src="scatterplot.js"></script>
-		<!-- // <script type="text/javascript" src="histogram.js"></script> -->
+		<script type="text/javascript" src="histogram.js"></script>
 		<script type="text/javascript" src="setupMap.js"></script>
 		<script type="text/javascript" src="geoplot.js"></script>
       <script>resize();</script>

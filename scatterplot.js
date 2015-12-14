@@ -115,32 +115,6 @@ function drawScatterplot() {
       .text("Dire");
 }
 
-function updatePoints() {
-  /*
-  var xExtent = d3.extent(boat_data.boats, function(d) { return d[v1]; });
-  var yExtent = d3.extent(boat_data.boats, function(d) { return d[v2]; });
-  var zExtent = d3.extent(boat_data.boats, function(d) { return d[v3]; });
-
-  x.domain(xExtent).nice();
-  y.domain(yExtent).nice();
-  color.domain(zExtent);
-  
-  d3.select("#xLabel").text(dataName(v1));
-  d3.select("#yLabel").text(dataName(v2));
-  d3.select("#colorLabel").text(dataName(v3));
-  
-  d3.select("#xAxis").call(xAxis);
-  d3.select("#yAxis").call(yAxis);
-  
-  points.transition()
-    .duration(750)
-    .ease("cubic")
-    .attr("cx", function(d) { return x(d[v1]); })
-    .attr("cy", function(d) { return y(d[v2]); })
-    .style("fill", function(d) { return color(d[v3]); });
-  */
-}
-
 function resizeScatterplot() {
 
   scWidth = viewWidth - scatterPlotMargin.left - scatterPlotMargin.right;
