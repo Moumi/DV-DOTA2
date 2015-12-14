@@ -40,10 +40,7 @@ function speed(d) {
 
 function draw_geoplot() {	
 	init();	
-	// draw_points();
 	draw_lines();
-	// draw_boats();
-	// draw_legend();
 }
 
 function init(){
@@ -56,40 +53,47 @@ function init(){
 }
 
 var startT = 0, endT = 120;
-function draw_points()
+
+function marker_start(color, val) 
 {
-	if (firstLoad) {
-		setTimeout(function() {}, 3000); // check again in a second
-		firstLoad = false;
-	}
+	geoplotSvg.append("defs").append("marker")
+		.attr("id", val)
+		.attr("viewBox","-6 -6 12 12")
+		.attr("refX", 0)
+		.attr("refY", 0)
+		.attr("markerWidth", 4)
+		.attr("markerHeight", 4)
+		.attr("orient", "auto")
+		.style("fill",color)
+		.attr("stroke-width", 1)
+		.attr("stroke","black")
+		.append("path")
+			.attr("d", "M 0, 0  m -5, 0  a 5,5 0 1,0 10,0  a 5,5 0 1,0 -10,0"); //this is actual shape for arrowhead (a triangle)
+	return "url(#" +val+ ")";
+}
 
-	geoplotSvg.selectAll("circle").remove();
-
-	var points = geoplotSvg.selectAll("circle")
-		.data(data);
-
-	points.enter()
-		.append("circle")
-			.filter(function(d) {
-				return d.tsync >= startT && d.tsync <= endT;
-			})
-			.attr("class", "unit")
-			.attr("cx", function(d) { return geoX(parseInt(d.x)); })
-			.attr("cy", function(d) { return geoY(parseInt(d.y)); })
-			.attr("r", 2)
-			.style("stroke", "black")
-			.style("fill", function(d) {
-				if (d.team == "radiant") {
-					return intToRGB(hashCode(d.player));
-				} else {
-					return intToRGB(hashCode(d.player));
-				}
-			})
-			.style("opacity", function(d) { return 1.0; });
+function marker_end(color, val) 
+{
+	geoplotSvg.append("defs").append("marker")
+		.attr("id", val)
+		.attr("viewBox","-10 0 10 10")
+		.attr("refX", 0)
+		.attr("refY", 3)
+		.attr("markerWidth", 4)
+		.attr("markerHeight", 4)
+		.attr("orient", "auto")
+		.style("fill",color)
+		.attr("stroke-width", 1)
+		.attr("stroke","black")
+		.append("path")
+			.attr("d", "M -10 0 L 0 5 L -10 10 Z"); //this is actual shape for arrowhead (a triangle)
+	return "url(#" +val+ ")";
 }
 
 function draw_lines() {
 	// begin of drawing lines
+	geoplotSvg.selectAll("marker").remove();
+
 	var line = d3.svg.line()
 	    .x(function(d){return geoX(parseInt(d.x));})
 	    .y(function(d){return geoY(parseInt(d.y));})
@@ -146,14 +150,17 @@ function draw_lines() {
 	        	.attr("stroke", "#" + strokeColor)
 				.attr("stroke-width", 2)
 				.attr("fill", "none")
-	            .style("stroke-dasharray", "5, 10");
+	            .style("stroke-dasharray", "5, 10")
+
 	    groupElement
         	.append("path")
 	        	.attr("class", "line")
 	        	.attr("d", line(playerData1))
 	        	.attr("stroke", "#" + strokeColor)
 				.attr("stroke-width", 2)
-				.attr("fill", "none");
+				.attr("fill", "none")
+				.style("marker-start", marker_start("#" + strokeColor, "start_marker_" + k))
+				.style("marker-end", marker_end("#" + strokeColor, "end_marker_" + k));
 	}
 }
 
