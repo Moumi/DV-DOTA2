@@ -49,7 +49,7 @@ var defs = scatterPlotSvg.append( "defs" ).append("clipPath")
   .append("rect")
     .attr("width", window.innerWidth/2 - selectionPlotMargin.left - selectionPlotMargin.right - 40) // Don't want to hard-code this, but d3 left me no choice
     .attr("height", window.innerHeight);
-    console.log(window.innerWidth);
+    //console.log(window.innerWidth);
 
 var line = d3.svg.line()
              .x(function(d){return x(d.tsync) }) //+(d.tsync));})
@@ -206,38 +206,11 @@ function drawScatterplot() {
       .text("Dire");
 }
 
-
 function brushed() {
   x.domain(brush.empty() ? x2.domain() : brush.extent());
   scatterPlotSvg.select(".line").attr("d", line(distanceData['radiant']));
   scatterPlotSvg.select(".line2").attr("d", line(distanceData['dire']));
   scatterPlotSvg.select(".x.axis").call(xAxis);
-}
-
-function updatePoints() {
-  /*
-  var xExtent = d3.extent(boat_data.boats, function(d) { return d[v1]; });
-  var yExtent = d3.extent(boat_data.boats, function(d) { return d[v2]; });
-  var zExtent = d3.extent(boat_data.boats, function(d) { return d[v3]; });
-
-  x.domain(xExtent).nice();
-  y.domain(yExtent).nice();
-  color.domain(zExtent);
-  
-  d3.select("#xLabel").text(dataName(v1));
-  d3.select("#yLabel").text(dataName(v2));
-  d3.select("#colorLabel").text(dataName(v3));
-  
-  d3.select("#xAxis").call(xAxis);
-  d3.select("#yAxis").call(yAxis);
-  
-  points.transition()
-    .duration(750)
-    .ease("cubic")
-    .attr("cx", function(d) { return x(d[v1]); })
-    .attr("cy", function(d) { return y(d[v2]); })
-    .style("fill", function(d) { return color(d[v3]); });
-  */
 }
 
 function resizeScatterplot() {

@@ -1,27 +1,27 @@
 var button_caption1 = "Use satellite image";
 var button_caption2 = "Use map image";
 
-function draw_background()
+function draw_background(id)
 {
-	var vis   = d3.select("#geoplot").select("svg")
+	var vis = d3.select(id).select("svg");
 	
 	var width = vis.style("width").replace("px", "");
     var height = vis.style("height").replace("px", "");
 
 	
 	var defs= vis.append('defs')
-	defs.append("pattern")
-		.attr("id", "bg_image")
-		.attr("patternUnits", "userSpaceOnUse")
-		.attr("width", width)
-		.attr("height", height)
-		.append("svg:image")
-		.attr("id","url_to_image")
-		.attr("xlink:href", "images/big_map.jpg")
-		.attr("width", width)
-		.attr("height", height)
-		.attr("x", 0)
-		.attr("y", 0);
+		defs.append("pattern")
+			.attr("id", "bg_image")
+			.attr("patternUnits", "userSpaceOnUse")
+			.attr("width", width)
+			.attr("height", height)
+			.append("svg:image")
+			.attr("id","url_to_image")
+			.attr("xlink:href", "images/big_map.jpg")
+			.attr("width", width)
+			.attr("height", height)
+			.attr("x", 0)
+			.attr("y", 0);
 	
 	vis.append("a")
 		.append("path")
@@ -29,42 +29,6 @@ function draw_background()
 		.attr("d", "M 0,0, "+width+",0, "+width+","+height+", 0,"+height+", 0,0 z")
 		.attr("transform", "translate(0, 0)")
 		.attr("fill", "url(#bg_image)");
-}		
-
-function update_background()
-{
-	var elem = document.getElementById("btn_background");
-
-	var vis   = d3.select("#geoplot").select("svg")
-	var width = vis.style("height").replace("px", "");
-    var height = vis.style("width").replace("px", "");
-	
-	d3.select(bg_image).attr("width", width);
-	d3.select(bg_image).attr("height", height);	
-	
-	d3.select(url_to_image).attr("width", width);
-	d3.select(url_to_image).attr("height", height);	
-	
-	d3.select(texture_path).attr("d", "M 0,0, "+width+",0, "+width+","+height+", 0,"+height+", 0,0 z");
-		
-	var caption = elem.textContent || elem.innerText; //to make sure it works in every browser
-	
-    if (caption==button_caption1)
-	{
-		elem.innerText = button_caption2;   //Works in Chrome and IE, but not in Firefox
-		elem.textContent = button_caption2; //Right way to do it, but might not work in IE
-		d3.select(url_to_image).attr("xlink:href", "images/big_map.jpg");
-		d3.select("#geoplot").selectAll("text").style("fill", "white");
-	}
-    else 
-	{
-		elem.innerText = button_caption1;   //Works in Chrome and IE, but not in Firefox
-		elem.textContent = button_caption1; //Right way to do it, but might not work in IE
-		d3.select(url_to_image).attr("xlink:href", "images/big_map.jpg");
-		d3.select("#geoplot").selectAll("text").style("fill", "black");
-	}	
-
-	// resizeGeoplot();
 }
 
 function createjsfile(filename, filetype, id){
@@ -91,22 +55,15 @@ function replacejsfile(oldfilename, newfilename, filetype, id){
 }
 
 var tempPlayer = data[0].player; var tempT = data[0].t;
-
 function waitForDataLoad() {
-
 	if (data[0].player != tempPlayer && data[0].t != tempT) {
-
     	tempPlayer = data[0].player;
-
     	tempT = data[0].t;
-
     	draw_geoplot();
-
         drawScatterplot();
+        drawHeatmap();
     } else {
-
        	setTimeout(waitForDataLoad, 100);
-
     }
 
 }
@@ -130,19 +87,15 @@ function select_match()
     // replace data file
     var currentMatch = 'data/'+document.getElementById("current_data").src;
     currentMatch = currentMatch.split('data/')[2];
-    replacejsfile(currentMatch, 'data/'+matchID+'.js', 'js', 'current_data');
+    replacejsfile(currentMatch, 'data/geoplot/'+matchID+'.js', 'js', 'current_data');
     waitForDataLoad();
     // replace distance file
     var currentMatch = 'data/'+document.getElementById("current_distance").src;
     currentMatch = currentMatch.split('data/')[2];
-    replacejsfile(currentMatch, 'data/'+matchID+'_master-distance.js', 'js', 'current_distance');
+    replacejsfile(currentMatch, 'data/distance/'+matchID+'_master-distance.js', 'js', 'current_distance');
     waitForDataLoad();
 }
 
 fill_combobox();
 select_match();
-
-document.getElementById("btn_background").innerText = button_caption1;  //Works in Chrome and IE, but not in Firefox
-document.getElementById("btn_background").textContent = button_caption1;//Right way to do it, but might not work in IE
-
-draw_background();
+/*draw_background("#heatmap");*/ draw_background("#geoplot"); 
