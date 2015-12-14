@@ -98,4 +98,4 @@ function select_match()
 
 fill_combobox();
 select_match();
-draw_background("#heatmap"); draw_background("#geoplot"); 
+/*draw_background("#heatmap");*/ draw_background("#geoplot"); 

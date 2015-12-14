@@ -8,7 +8,7 @@ function drawHeatmap() {
   var data_ = heatmapData[0][Object.keys(heatmapData[0])].filter(function(d) {
     return true; //d.tsync >= startT && d.tsync <= endT;
   });
-  console.log(data_.length);
+  //console.log(data_.length);
 
   var dataFiltered = data.filter(function(d) {
           if (d.tsync >= startT && d.tsync <= endT) {
@@ -38,7 +38,7 @@ function drawHeatmap() {
       .attr("r", 2)
       .style("stroke", "black")
       .style("fill", function(d) {
-        console.log(colorScale(getCount(d, data_) * 100));
+        //console.log(colorScale(getCount(d, data_) * 100));
         return colorScale(getCount(d, data_) / 10);
       })
       .style("opacity", function(d) { return 1.0; });
@@ -53,7 +53,7 @@ function getMin(data, data_) {
       min = count;
     }
   }
-  console.log("Min: " + min);
+  //console.log("Min: " + min);
   return min;
 }
 
@@ -66,7 +66,7 @@ function getMax(data, data_) {
       max = count;
     }
   }
-  console.log("Max: " + max);
+  //console.log("Max: " + max);
   return max;
 }
 
