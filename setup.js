@@ -2,7 +2,7 @@ var windowWidth = 500;
 var windowHeight = 500;
 
 var margin = {top: 15, right: 15, bottom: 50, left: 15};
-var viewWidth = windowWidth/3 - margin.left - margin.right;
+var viewWidth = windowWidth/2 - margin.left - margin.right;
 var viewHeight = windowHeight - margin.top - margin.bottom;
 
 var scatterplot = d3.select("#scatterplot")
@@ -38,7 +38,7 @@ function resize() {
   d3.select("#container")
     .attr("width", viewWidth);
 
-  var vw = windowWidth/3 - margin.left - margin.right;
+  var vw = windowWidth/2 - margin.left - margin.right;
   var vh = windowHeight - margin.top - margin.bottom;
 
   viewWidth = Math.min(vw, vh);
