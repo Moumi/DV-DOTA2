@@ -2,19 +2,41 @@ var heatmapSvg = d3.select("#heatmap").select("svg")
     .attr("width", viewWidth)
     .attr("height", viewHeight);
 
-function drawHeatmap() {
-  var minCount = heatmapData[1].min;
-  var maxCount = heatmapData[2].max;
-  var data_ = heatmapData[0][Object.keys(heatmapData[0])].filter(function(d) {
-    return true; //d.tsync >= startT && d.tsync <= endT;
-  });
-  console.log(data_.length);
+function getObject(data, x, y) {
+  for (var k in data) {
+    var obj = data[k];
 
-  var dataFiltered = data.filter(function(d) {
-          if (d.tsync >= startT && d.tsync <= endT) {
-              return true;
-          }
-        });
+    if (obj.x === x && obj.y === y) {
+      return obj;
+    }
+  }
+  return null;
+}
+
+function drawHeatmap() {
+  var data_ = heatmapData[0][Object.keys(heatmapData[0])].filter(function(d) {
+    var tsync = Object.keys(d)[0];
+    return tsync >= startT && tsync <= endT;
+  });
+
+  var dataHeatmap = [];
+  data_.forEach(function(d) {
+    var values = d[Object.keys(d)[0]];
+
+    for (var k in values) {
+      var obj = values[k];
+      var obj_ = getObject(dataHeatmap, obj.x, obj.y);
+      if (obj_ != null) {
+        var old = obj_.count;
+        obj_.count += obj.count;
+      } else {
+        console.log(obj);
+        dataHeatmap.push(obj);
+      }
+    }
+  });
+
+  // console.log(dataHeatmap);
 
   var geoX = d3.scale.linear()
     .domain([0, 125])
@@ -23,23 +45,26 @@ function drawHeatmap() {
     .domain([0, 125])
     .range([viewHeight, 0]);
   
-  var points = heatmapSvg.selectAll("circle")
-    .data(dataFiltered);
+  var points = heatmapSvg.selectAll("rect")
+    .data(dataHeatmap);
 
   var colorScale = d3.scale.linear()
-    .domain([getMin(dataFiltered, data_) * 100, getMax(dataFiltered, data_) * 100])
+    .domain([0, 6])
     .range(["yellow", "red"]);
 
   points.enter()
-    .append("circle")
+    .append("rect")
       .attr("class", "unit")
-      .attr("cx", function(d) { return geoX(parseInt(d.x)); })
-      .attr("cy", function(d) { return geoY(parseInt(d.y)); })
-      .attr("r", 2)
-      .style("stroke", "black")
+      .attr("x", function(d) { return geoX(parseInt(d.x)); })
+      .attr("y", function(d) { return geoY(parseInt(d.y)); })
+      .attr("width", 5)
+      .attr("height", 5)
+      // .attr("r", 4)
+      // .style("stroke", function(d) {
+      //   return colorScale(d.count);
+      // })
       .style("fill", function(d) {
-        console.log(colorScale(getCount(d, data_) * 100));
-        return colorScale(getCount(d, data_) / 10);
+        return colorScale(d.count);
       })
       .style("opacity", function(d) { return 1.0; });
 }
