@@ -19,7 +19,7 @@ var geoplot = d3.select("#geoplot")
     .attr("height", viewHeight)
     .append("g");
     
-var histogram = d3.select("#histogram")
+var heatmap = d3.select("#heatmap")
     .style("float", "left")
   .select("svg")
     .attr("width", viewWidth)
@@ -27,9 +27,8 @@ var histogram = d3.select("#histogram")
     .append("g");
 
 
-
+var initLoaded = false;
 function resize() {
-  
   console.log("resize");
   
   windowWidth = window.innerWidth;
@@ -51,12 +50,28 @@ function resize() {
   d3.select("#scatterplotSelectionUI")
   	.selectAll("select")
     .style("width", viewWidth/4.5+"px");
-  
-  resizeScatterplot();
-  resizeGeoplot();
-  // resizeHistogram();
+
+  if (!initLoaded) {
+    init();
+  } else {
+    resizeGeoplot();
+    resizeHeatmap();
+    resizeScatterplot();
+  }
+}
+
+function init() {
+  if (typeof resizeGeoplot !== 'undefined') {
+    resizeGeoplot();
+    resizeHeatmap();
+    resizeScatterplot();
+    initLoaded = true;
+  } else {
+    console.log("waiting...");
+    setTimeout(init, 100);
+  }
 }
 
 
-//resize();
+resize();
 d3.select(window).on("resize", resize);

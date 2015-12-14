@@ -1,133 +1,94 @@
-var histogramSvg = d3.select("#histogram").select("svg")
+var heatmapSvg = d3.select("#heatmap").select("svg")
     .attr("width", viewWidth)
-    .attr("height", viewHeight)
-  .append("g")
-    .attr("transform", "translate(" + viewWidth/2 + "," + viewHeight/2 + ")");
+    .attr("height", viewHeight);
 
-var barHeight = Math.min(viewWidth, viewHeight) / 2 - 50;
+function drawHeatmap() {
+  var minCount = heatmapData[1].min;
+  var maxCount = heatmapData[2].max;
+  var data_ = heatmapData[0][Object.keys(heatmapData[0])].filter(function(d) {
+    return true; //d.tsync >= startT && d.tsync <= endT;
+  });
+  console.log(data_.length);
 
-var formatNumber = d3.format("s");
+  var dataFiltered = data.filter(function(d) {
+          if (d.tsync >= startT && d.tsync <= endT) {
+              return true;
+          }
+        });
 
-var innerWhiteSpaceFraction = 0.25;
-var numBins = parseInt(document.getElementById("numBins").value);
-
-var angles = []; angles.length = boat_data.boats.length;
-for (var i = 0; i < angles.length; i++)
-{    
-	var angle = Math.atan2(-boat_data.boats[i].v,boat_data.boats[i].u);
-	if(angle < 0){
-		angle = 2*Math.PI + angle;
-	}
-  angles[i] = angle * 180 / Math.PI;
-}
-
-
-function drawHistogram() {
+  var geoX = d3.scale.linear()
+    .domain([0, 125])
+    .range([0, viewWidth]);
+  var geoY = d3.scale.linear()
+    .domain([0, 125])
+    .range([viewHeight, 0]);
   
-  histogramSvg.selectAll('*').remove();
- 
-  var data = d3.layout.histogram()
-    .bins(numBins)
-    (angles);
+  var points = heatmapSvg.selectAll("circle")
+    .data(dataFiltered);
 
-  var extent = d3.extent(data, function(d) { return d.length; });
-  var barScale = d3.scale.linear()
-      .domain(extent)
-      .range([0, barHeight]);
-      //.range([barHeight,barHeight*innerWhiteSpaceFraction]);
+  var colorScale = d3.scale.linear()
+    .domain([getMin(dataFiltered, data_) * 100, getMax(dataFiltered, data_) * 100])
+    .range(["yellow", "red"]);
 
-  var keys = data.map(function(d,i) { var min = 360*(i/data.length); var max = 360*((i+1)/data.length); return ((min + max) / 2).toFixed(1) + "\xB0"; });
-  var numBars = data.length;
-
-  var x = d3.scale.linear()
-      .domain(extent)
-      .range([0, -barHeight]);
-      //.range([-barHeight, -barHeight*innerWhiteSpaceFraction]);
-
-  var xAxis = d3.svg.axis()
-      .scale(x).orient("left")
-      .ticks(3)
-      .tickFormat(formatNumber);
-      
-  var circles = histogramSvg.selectAll("circle")
-          .data(x.ticks(3))
-        .enter().append("circle")
-          .attr("r", function(d) {return barScale(d);})
-          .style("fill", "none")
-          .style("stroke", "black")
-          .style("stroke-dasharray", "2,2")
-          .style("stroke-width",".5px");
-
-  var arc = d3.svg.arc()
-      .startAngle(function(d,i) { return (i * 2 * Math.PI) / numBars; })
-      .endAngle(function(d,i) { return ((i + 1) * 2 * Math.PI) / numBars; })
-      .innerRadius(0);
-      //.outerRadius(barHeight);
-  
-  var segments = histogramSvg.selectAll("path")
-          .data(data)
-        .enter().append("path")
-          .each(function(d) { d.outerRadius = barScale(d.length); })
-          //.each(function(d) { d.innerRadius = barScale(d.length); })
-          .style("fill", "#6960EC")
-          .attr("d", arc)
-      		.on("mouseover", function() {
-      			d3.select(this).style("fill", "#342D7E");
-      		})
-      		.on("mouseout", function() {
-      			d3.select(this).style("fill", "#6960EC");
-      		});
-
-
-  var lines = histogramSvg.selectAll("line")
-      .data(keys)
-    .enter().append("line")
-      //.attr("y1", -barHeight*innerWhiteSpaceFraction)
-      .attr("y2", -barHeight - 20)
+  points.enter()
+    .append("circle")
+      .attr("class", "unit")
+      .attr("cx", function(d) { return geoX(parseInt(d.x)); })
+      .attr("cy", function(d) { return geoY(parseInt(d.y)); })
+      .attr("r", 2)
       .style("stroke", "black")
-          .style("stroke-width",".25px")
-      .attr("transform", function(d, i) { return "rotate(" + (i * 360 / numBars) + ")"; });
-      
-    histogramSvg.append("g")
-      .attr("class", "x axis")
-      .call(xAxis);
-
-  // Labels
-  var labelRadius = barHeight * 1.025;
-
-  var labels = histogramSvg.append("g")
-      .classed("labels", true);
-
-  labels.append("def")
-        .append("path")
-        .attr("id", "label-path")
-        .attr("d", "m0 " + -labelRadius + " a" + labelRadius + " " + labelRadius + " 0 1,1 -0.01 0");
-
-  labels.selectAll("text")
-        .data(keys)
-      .enter().append("text")
-        .style("text-anchor", "middle")
-        .append("textPath")
-        .attr("xlink:href", "#label-path")
-        .attr("startOffset", function(d, i) {return i * 100 / numBars + 50 / numBars + '%';})
-        .text(function(d) {return d; });
+      .style("fill", function(d) {
+        console.log(colorScale(getCount(d, data_) * 100));
+        return colorScale(getCount(d, data_) / 10);
+      })
+      .style("opacity", function(d) { return 1.0; });
 }
 
-function resizeHistogram() {
-  
+function getMin(data, data_) {
+  var min = 99999;
+  for (var i = 0; i < data.length; i++) {
+    var element = data[i];
+    var count = getCount(element, data_);
+    if (count < min) {
+      min = count;
+    }
+  }
+  console.log("Min: " + min);
+  return min;
+}
+
+function getMax(data, data_) {
+  var max = -1;
+  for (var i = 0; i < data.length; i++) {
+    var element = data[i];
+    var count = getCount(element, data_);
+    if (count > max) {
+      max = count;
+    }
+  }
+  console.log("Max: " + max);
+  return max;
+}
+
+function getCount(d, data) {
+  for (var i = 0; i < data.length; i++) {
+    var element = data[i];
+    if (parseInt(element.x) ===  d.x && parseInt(element.y) === d.y) {
+      return element.count;
+    }
+  }
+  return 1;
+}
+
+function resizeHeatmap() {
+  heatmapSvg.selectAll('*').remove();
+
   d3.select("#scatterplot").select("svg")
     .attr("width", viewWidth)
     .attr("height", viewHeight)
-  
-  histogramSvg.attr("transform", "translate(" + viewWidth/2 + "," + viewHeight/2 + ")");
-  
-  barHeight = Math.min(viewWidth, viewHeight) / 2 - 40;
 
-  drawHistogram();
-}
-
-function setNumberOfBins() {
-  numBins = parseInt(document.getElementById("numBins").value);
-  console.log(numBins);
-  drawHistogram();
+  heatmapSvg.attr("transform", "translate(" + viewWidth/2 + "," + viewHeight/2 + ")");
+    
+  draw_background("#heatmap");
+  drawHeatmap();
 }
