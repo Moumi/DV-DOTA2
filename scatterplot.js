@@ -1,5 +1,5 @@
-var linePlotMargin = {top: 20, right: 20, bottom: 150, left: 40};
-var selectionPlotMargin = {top: 500, right: 20, bottom: 20, left: 40};
+var linePlotMargin = {top: 20, right: 20, bottom: 100, left: 40};
+var selectionPlotMargin = {top: 615, right: 20, bottom: 20, left: 40};
 var lpWidth = viewWidth - linePlotMargin.left - linePlotMargin.right;
 var lpHeight = viewHeight - linePlotMargin.top - linePlotMargin.bottom;
 var lpHeight2 = viewHeight - selectionPlotMargin.top - selectionPlotMargin.bottom;
@@ -47,8 +47,9 @@ var context = d3.select("#scatterplot").select("svg")
 var defs = scatterPlotSvg.append( "defs" ).append("clipPath")
     .attr("id", "clip")
   .append("rect")
-    .attr("width", 540) // Don't want to hard-code this, but d3 left me no choice
-    .attr("height", viewHeight);
+    .attr("width", window.innerWidth/2 - selectionPlotMargin.left - selectionPlotMargin.right - 40) // Don't want to hard-code this, but d3 left me no choice
+    .attr("height", window.innerHeight);
+    console.log(window.innerWidth);
 
 var line = d3.svg.line()
              .x(function(d){return x(d.tsync) }) //+(d.tsync));})
