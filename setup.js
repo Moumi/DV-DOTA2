@@ -2,7 +2,7 @@ var windowWidth = 500;
 var windowHeight = 500;
 
 var margin = {top: 15, right: 15, bottom: 50, left: 15};
-var viewWidth = windowWidth/3 - margin.left - margin.right;
+var viewWidth = windowWidth/2 - margin.left - margin.right;
 var viewHeight = windowHeight - margin.top - margin.bottom;
 
 var scatterplot = d3.select("#scatterplot")
@@ -18,7 +18,7 @@ var geoplot = d3.select("#geoplot")
     .attr("width", viewWidth)
     .attr("height", viewHeight)
     .append("g");
-    
+
 var heatmap = d3.select("#heatmap")
     .style("float", "left")
   .select("svg")
@@ -26,10 +26,9 @@ var heatmap = d3.select("#heatmap")
     .attr("height", viewHeight)
     .append("g");
 
-
 var initLoaded = false;
 function resize() {
-  console.log("resize");
+  //console.log("resize");
   
   windowWidth = window.innerWidth;
   windowHeight = window.innerHeight;
@@ -37,7 +36,7 @@ function resize() {
   d3.select("#container")
     .attr("width", viewWidth);
 
-  var vw = windowWidth/3 - margin.left - margin.right;
+  var vw = windowWidth/2 - margin.left - margin.right;
   var vh = windowHeight - margin.top - margin.bottom;
 
   viewWidth = Math.min(vw, vh);
@@ -67,7 +66,7 @@ function init() {
     resizeScatterplot();
     initLoaded = true;
   } else {
-    console.log("waiting...");
+    //console.log("waiting...");
     setTimeout(init, 100);
   }
 }
