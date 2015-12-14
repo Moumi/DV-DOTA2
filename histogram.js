@@ -1,87 +1,109 @@
-var heatmapSvg = d3.select("#heatmap").select("svg")
-    .attr("width", viewWidth)
-    .attr("height", viewHeight);
+// var heatmapSvg = d3.select("#heatmap").select("svg")
+//     .attr("width", viewWidth)
+//     .attr("height", viewHeight);
 
-function drawHeatmap() {
-  var data_ = heatmapData[0][Object.keys(heatmapData[0])].filter(function(d) {
-    var tsync = Object.keys(d)[0];
-    return tsync >= startT && tsync <= endT;
-  });
-
-  var data1 = heatmapData[0];
-  console.log(Object.keys(data1)[0]);
-  // var data2 = data[1][Object.keys(data1)];
-
-  // console.log(data2);
-
-  // var dataHeatmap = [];
-  // data_.forEach(function(d) {
-  //   var values = d[Object.keys(d)[0]];
-
-  //   for (var k in values) {
-  //     var obj = values[k];
-  //     var obj_ = getObject(dataHeatmap, obj.x, obj.y);
-  //     if (obj_ != null) {
-  //       var old = obj_.count;
-  //       obj_.count += obj.count;
-  //     } else {
-  //       dataHeatmap.push(obj);
-  //     }
-  //   }
-  // });
-
-
-
-  // var geoX = d3.scale.linear()
-  //   .domain([0, 125])
-  //   .range([0, viewWidth]);
-  // var geoY = d3.scale.linear()
-  //   .domain([0, 125])
-  //   .range([viewHeight, 0]);
-  
-  // var points = heatmapSvg.selectAll("rect")
-  //   .data(dataHeatmap);
-
-  // var colorScale = d3.scale.linear()
-  //   .domain([0, 6])
-  //   .range(["yellow", "red"]);
-
-  // points.enter()
-  //   .append("rect")
-  //     .attr("class", "unit")
-  //     .attr("x", function(d) { return geoX(parseInt(d.x)); })
-  //     .attr("y", function(d) { return geoY(parseInt(d.y)); })
-  //     .attr("width", 5)
-  //     .attr("height", 5)
-  //     // .attr("r", 4)
-  //     // .style("stroke", function(d) {
-  //     //   return colorScale(d.count);
-  //     // })
-  //     .style("fill", function(d) {
-  //       return colorScale(d.count);
-  //     })
-  //     .style("opacity", function(d) { return 1.0; });
-}
-
-function getCount(d, data) {
-  for (var i = 0; i < data.length; i++) {
-    var element = data[i];
-    if (parseInt(element.x) ===  d.x && parseInt(element.y) === d.y) {
-      return element.count;
+function getObject(data, x, y) {
+  for (var z in data) {
+    var element = data[z];
+    if (element.x === x && element.y === y) {
+      return element;
     }
   }
-  return 1;
+  return null;
+}
+
+var startPos = 0; var range = 125; var steps = 5; var binSize = Math.floor(range / steps);
+function index_(x, y) {
+  var xPos = Math.floor((x - startPos) / range * binSize);
+  var yPos = Math.floor((y - startPos) / range * binSize);
+
+  // console.log("(" + x + "," + y + ") -> (" + xPos + "," + yPos + ")");
+  return xPos + (binSize * yPos);
+}
+
+function drawHeatmap() {
+  geoplotSvg.selectAll('rect').remove();
+
+  var dataHeatmap = [];
+  for (var tsync in heatmapData) {
+    if (tsync >= startT && tsync <= endT) {
+      var dataTsync = heatmapData[tsync]; // array of tsync
+      for (var element in dataTsync) { // iterate over array
+        dataHeatmap.push(dataTsync[element]); // push element seperately
+      }
+    }
+  }
+
+  var data_ = [];
+  for (var k in dataHeatmap) {
+    var e = dataHeatmap[k];
+    var obj = getObject(data_, e.x, e.y);
+    if (obj != null) {
+      obj.count += e.count;
+    } else {
+      data_.push(e);
+    }
+  }
+
+  var binData = []; 
+  for (var x = startPos; x < range; x += steps) {
+    for (var y = startPos; y < range; y += steps) {
+      binData.push({"x": x, "y": y, "count": 0});
+    }
+  }
+
+  data_.forEach(function(d) {
+    var idx = index_(d.x, d.y);
+    binData[idx].count += d.count;
+  });
+
+  binData = binData.filter(function(d) {
+    return d.count != 0;
+  })
+  
+  var points = geoplotSvg.selectAll("rect")
+    .data(binData);
+
+  var colorScale = d3.scale.linear()
+    .domain([d3.min(binData, function(d) { 
+        if (d.count == 0) {
+          return 9999;
+        }
+        return d.count; 
+      }), d3.max(binData, function(d) { 
+        if (d.count == 0) {
+          return -100;
+        }
+        return d.count; 
+      })])
+    .range(["yellow", "red"]);
+
+  var attrScale = d3.scale.linear()
+    .domain([0, range])
+    .range([0, viewHeight]);
+
+  // init(true);
+
+  points.enter()
+    .append("rect")
+      .attr("class", "unit")
+      .attr("y_", function(d) { return (d.x); })
+      .attr("x_", function(d) { return (d.y); }) 
+      .attr("y", function(d) { return geoY(d.x) - attrScale(steps) + 1; })
+      .attr("x", function(d) { return geoX(d.y) - (attrScale(steps) / 10); })
+      .attr("count", function(d) { return d.count; })
+      .attr("width", attrScale(steps))
+      .attr("height", attrScale(steps))
+      .style("fill", function(d) {
+        return colorScale(d.count);
+      })
+      .style("opacity", function(d) { if (d.count == 0) return 0; else return 0.7; });
 }
 
 function resizeHeatmap() {
-  heatmapSvg.selectAll('*').remove();
-
   d3.select("#scatterplot").select("svg")
     .attr("width", viewWidth)
     .attr("height", viewHeight)
-
-  heatmapSvg.attr("transform", "translate(" + viewWidth/2 + "," + viewHeight/2 + ")");
     
-  draw_background("#heatmap");
   drawHeatmap();
 }

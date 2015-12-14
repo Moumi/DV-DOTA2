@@ -39,20 +39,55 @@ function speed(d) {
 }
 
 function draw_geoplot() {	
-	init();	
+	init(false);	
 	draw_lines();
 }
 
-function init(){
-	geoX = d3.scale.linear()
-		.domain([0, 125])
-    	.range([-5, viewWidth - 5]);
- 	geoY = d3.scale.linear()
-		.domain([0, 125])
-	    .range([viewHeight - 10, -10]);
+function init(switchRange) {
+	/** CRAZY ASS SHIT **/
+	{
+		var geoplotSVG = d3.select("#geoplot").select("svg");
+		var width = geoplotSVG.style("width").replace("px", "");
+	}
+
+	/* Offsets for the x-range */
+	var offsetXScale_1 = d3.scale.linear()
+		.domain([104, 610])
+		.range([10, 30]);
+	var offsetXScale_2 = d3.scale.linear()
+		.domain([104, 610])
+		.range([5, 15]);
+
+	var offsetX1 = offsetXScale_1(parseInt(width));
+	var offsetX2 = offsetXScale_2(parseInt(width));
+
+	/* Offsets for the y-range */
+	var offsetYScale_1 = d3.scale.linear()
+		.domain([104, 610])
+		.range([10, 40]);
+
+	var offsetY1 = offsetYScale_1(parseInt(width));
+	var offsetY2 = 5;
+	
+	/* Geo scale for points */
+	if (switchRange) {
+		geoX = d3.scale.linear()
+			.domain([0, 125])
+	    	.range([viewWidth - offsetX2, offsetX1]);
+	 	geoY = d3.scale.linear()
+			.domain([0, 125])
+		    .range([offsetY2, viewHeight - offsetY1]);
+	} else {
+		geoX = d3.scale.linear()
+			.domain([5, 125])
+	    	.range([offsetX1, viewWidth - offsetX2]);
+	 	geoY = d3.scale.linear()
+			.domain([5, 125])
+		    .range([viewHeight - offsetY1, offsetY2]);
+	}
 }
 
-var startT = 0, endT = 120;
+var startT = 0, endT = 200;
 
 function marker_start(color, val) 
 {
@@ -106,62 +141,125 @@ function draw_lines() {
 	var paths = geoplotSvg.selectAll("path")
 		.data(playerNestData);
 
+	// TEMP
+	var dataExtremes = []; var firstShit = true;
+
 	geoplotSvg.selectAll(".line").remove();
 	geoplotSvg.selectAll(".line-dashed").remove();
-	var colorShit = ["red", "blue", "white", "violet", "black", "orange", "green", "purple", "pink", "brown", "white", "white"];
 	for (var k in playerNestData) {
+		// Name of player
+		var playerName = playerNestData[k].key;
+
 		// Color for the line
-		var strokeColor = intToRGB(hashCode(playerNestData[k].key));
+		var strokeColor = intToRGB(hashCode(playerName));
 
 		// Data sorted on the player names
 		var dataSorted = playerNestData[k].values.sort(function(a,b) { 
             return a.player - b.player;
         });
+
         // Data filtered on the selected timeframe
-        var dataFiltered = dataSorted.filter(function(d) {
+        var dataFiltered = dataSorted.filter(function(d, i) {
         	if (d.tsync >= startT && d.tsync <= endT) {
-            	return true;
+        		var p1 = dataSorted[i]; var p2 = dataSorted[i+1];
+        		if (p2 != undefined) {
+        			var dist = distance(p1.x, p1.y, p2.x, p2.y);
+        			// if (dist == 0) 
+        				// return false;
+        		}
+        		return true;
 	        }
         });
 
-        var playerData1 = dataFiltered.filter(function(d, i) {
-			var p1 = dataFiltered[i]; var p2 = dataFiltered[i+1];
-        	if (p2 != undefined) {
-        		if (Math.abs(parseInt(p1.x) - parseInt(p2.x)) > 40 || Math.abs(parseInt(p1.y) - parseInt(p2.y)) > 40) {
-        			return false;
+        var teleportData = [];
+        var regularWalkData = [];
+        // if (playerName == "god") {
+        	var regularWalk = [];
+        	for (var i = 0; i < dataFiltered.length - 1; i++) {
+        		var d1 = dataFiltered[i]; var d2 = dataFiltered[i+1];
+        		if (typeof d2 === 'undefined' || typeof d1 === 'undefined')
+        			continue;
+
+        		var dist = distance(d1.x, d1.y, d2.x, d2.y);
+        		if (dist > 5) {
+        			// Add teleport elements
+        			if (regularWalk.length >= 1) {
+	        			if (d1.x == regularWalk[0].x && 
+	        				d1.y == regularWalk[0].y && d2.x == regularWalk[regularWalk.length - 1].x && d2.y == regularWalk[regularWalk.length - 1].y ||
+	        				d2.x == regularWalk[0].x && d2.y == regularWalk[0].y && d1.x == regularWalk[regularWalk.length - 1].x && d1.y == regularWalk[regularWalk.length - 1].y) {
+	        				console.log("Yata");
+	        			} else {
+							teleportData.push([d1, d2]);
+	        			}
+        			}
+
+					// Add the regular walk path
+        			regularWalkData.push(regularWalk);
+        			regularWalk = [];
         		} else {
-        			return true;
+        			regularWalk.push(d1);
+        			regularWalk.push(d2);
         		}
-        	}		
-        });
-
-        var playerData2 = dataFiltered.filter(function(d) {
-    		return playerData1.indexOf(d) == -1;
-		});
+        	}
+        // }
         
-        var groupElement = geoplotSvg
+        var playerGroup = geoplotSvg
         	.append("g")
-        		.attr("player", playerNestData[k].key);
+        		.attr("player", playerName);
 
-       	groupElement
-        	.append("path")
-				.attr("class", "line-dashed")
-				.attr("d", line(playerData2))
-	        	.attr("stroke", "#" + strokeColor)
-				.attr("stroke-width", 2)
-				.attr("fill", "none")
-	            .style("stroke-dasharray", "5, 10")
+        var walkGroup = playerGroup
+        	.append("g")
+        		.attr("class", "regularWalk");
 
-	    groupElement
-        	.append("path")
-	        	.attr("class", "line")
-	        	.attr("d", line(playerData1))
-	        	.attr("stroke", "#" + strokeColor)
-				.attr("stroke-width", 2)
-				.attr("fill", "none")
-				.style("marker-start", marker_start("#" + strokeColor, "start_marker_" + k))
-				.style("marker-end", marker_end("#" + strokeColor, "end_marker_" + k));
+        for (var i = 0; i < regularWalkData.length; i++) {
+        	walkGroup
+	        	.append("path")
+		        	.attr("class", "line")
+		        	.attr("d", line(regularWalkData[i]))
+		        	.attr("stroke", "#" + strokeColor)
+					.attr("stroke-width", 2)
+					.attr("fill", "none")
+					.style("marker-start", marker_start("#" + strokeColor, "start_marker_" + k))
+					.style("marker-end", marker_end("#" + strokeColor, "end_marker_" + k));
+        }
+
+        var teleportGroup = playerGroup
+        	.append("g")
+        		.attr("class", "teleport");
+
+        for (var i = 0; i < teleportData.length; i++) {
+        	teleportGroup
+	        	.append("path")
+					.attr("class", "line-dashed")
+					.attr("d", line(teleportData[i]))
+		        	.attr("stroke", "#" + strokeColor)
+					.attr("stroke-width", 2)
+					.attr("fill", "none")
+		            .style("stroke-dasharray", "5, 10");
+        }
+
+    //    	groupElement
+    //     	.append("path")
+				// .attr("class", "line-dashed")
+				// .attr("d", line(playerData2))
+	   //      	.attr("stroke", "#" + strokeColor)
+				// .attr("stroke-width", 2)
+				// .attr("fill", "none")
+	   //          .style("stroke-dasharray", "5, 10")
+
+	   //  groupElement
+    //     	.append("path")
+	   //      	.attr("class", "line")
+	   //      	.attr("d", line(playerData1))
+	   //      	.attr("stroke", "#" + strokeColor)
+				// .attr("stroke-width", 2)
+				// .attr("fill", "none")
+				// .style("marker-start", marker_start("#" + strokeColor, "start_marker_" + k))
+				// .style("marker-end", marker_end("#" + strokeColor, "end_marker_" + k));
 	}
+
+	// console.log(dataExtremes);
+	// draw_points(dataExtremes);
 }
 
 function resizeGeoplot()
@@ -170,9 +268,60 @@ function resizeGeoplot()
 	geoplotSvg.style("width",viewWidth);//leave some room for the buttons and text
 	geoplotSvg.style("height",viewHeight);//leave some room for the buttons and text
 
-	geoX.range([-5, viewWidth - 5]);
-	geoY.range([viewHeight - 10, -10]);
+	// geoX.range([-5, viewWidth - 5]);
+	// geoY.range([viewHeight - 10, -10]);
 		
 	draw_background("#geoplot");
 	draw_geoplot();
+}
+
+var teamPlayer = ""; var tSync = 0;
+function min(data) {
+	var minX = 9999; var minY = 9999;
+	for (var i = 0; i < data.length; i++) {
+		var curX = data[i].x;
+		var curY = data[i].y;
+		var curTeam = data[i].team;
+		var curTsync = data[i].tsync;
+
+		if (curX < minX) {
+			minX = curX;
+			teamPlayer = curTeam;
+			tSync = curTsync;
+		}
+		if (curY < minY) {
+			minY = curY;
+			teamPlayer = curTeam;
+			tSync = curTsync;
+		}
+	}
+	return [minX, minY];
+}
+function max(data) {
+	var maxX = -1; var maxY = -1;
+	for (var i = 0; i < data.length; i++) {
+		var curX = data[i].x;
+		var curY = data[i].y;
+		var curTeam = data[i].team;
+		var curTsync = data[i].tsync;
+
+		if (curX > maxX) {
+			maxX = curX;
+			teamPlayer = curTeam;
+			tSync = curTsync;
+		}
+		if (curY > maxY) {
+			maxY = curY;
+			teamPlayer = curTeam;
+			tSync = curTsync;
+		}
+	}
+	return [maxX, maxY];
+}
+
+function distance(x1, y1, x2, y2) {
+	var a = x1 - x2
+	var b = y1 - y2
+
+	return Math.sqrt( a*a + b*b );
 }

@@ -19,17 +19,15 @@ var geoplot = d3.select("#geoplot")
     .attr("height", viewHeight)
     .append("g");
 
-var heatmap = d3.select("#heatmap")
-    .style("float", "left")
-  .select("svg")
-    .attr("width", viewWidth)
-    .attr("height", viewHeight)
-    .append("g");
+// var heatmap = d3.select("#heatmap")
+//     .style("float", "left")
+//   .select("svg")
+//     .attr("width", viewWidth)
+//     .attr("height", viewHeight)
+//     .append("g");
 
 var initLoaded = false;
-function resize() {
-  //console.log("resize");
-  
+function resize() {  
   windowWidth = window.innerWidth;
   windowHeight = window.innerHeight;
 

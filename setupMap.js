@@ -94,8 +94,13 @@ function select_match()
     currentMatch = currentMatch.split('data/')[2];
     replacejsfile(currentMatch, 'data/distance/'+matchID+'_master-distance.js', 'js', 'current_distance');
     waitForDataLoad();
+    // replace heatmap file
+    var currentMatch = 'data/'+document.getElementById("current_heatmap").src;
+    currentMatch = currentMatch.split('data/')[2];
+    replacejsfile(currentMatch, 'data/heatmap/'+matchID+'.js', 'js', 'current_heatmap');
+    waitForDataLoad();
 }
 
 fill_combobox();
 select_match();
-draw_background("#heatmap"); draw_background("#geoplot"); 
+draw_background("#geoplot"); 
