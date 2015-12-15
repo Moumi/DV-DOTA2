@@ -159,7 +159,7 @@ function select_match()
     replacejsfile(currentMatch, 'data/heatmap/'+matchID+'.js', 'js', 'current_heatmap');
     waitForDataLoad();
 
-    redraw();
+    // redraw();
     drawScatterplot(true);
 }
 
