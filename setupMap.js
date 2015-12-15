@@ -129,17 +129,17 @@ function select_match()
     // replace data file
     var currentMatch = 'data/'+document.getElementById("current_data").src;
     currentMatch = currentMatch.split('data/')[2];
-    replacejsfile(currentMatch, '../data/geoplot/'+matchID+'.js', 'js', 'current_data');
+    replacejsfile(currentMatch, 'data/geoplot/'+matchID+'.js', 'js', 'current_data');
     waitForDataLoad();
     // replace distance file
     var currentMatch = 'data/'+document.getElementById("current_distance").src;
     currentMatch = currentMatch.split('data/')[2];
-    replacejsfile(currentMatch, '../data/distance/'+matchID+'_master-distance.js', 'js', 'current_distance');
+    replacejsfile(currentMatch, 'data/distance/'+matchID+'_master-distance.js', 'js', 'current_distance');
     waitForDataLoad();
     // replace heatmap file
     var currentMatch = 'data/'+document.getElementById("current_heatmap").src;
     currentMatch = currentMatch.split('data/')[2];
-    replacejsfile(currentMatch, '../data/heatmap/'+matchID+'.js', 'js', 'current_heatmap');
+    replacejsfile(currentMatch, 'data/heatmap/'+matchID+'.js', 'js', 'current_heatmap');
     waitForDataLoad();
 
     redraw(true);
