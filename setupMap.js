@@ -61,16 +61,17 @@ function replacejsfile(oldfilename, newfilename, filetype, id){
     }
 }
 
-var tempPlayer = data[0].player; var tempT = data[0].t;
+var oldDataLength = 0;
 function waitForDataLoad() {
-	if (data[0].player != tempPlayer && data[0].t != tempT) {
-    	tempPlayer = data[0].player;
-    	tempT = data[0].t;
-    	draw_geoplot();
-        drawScatterplot();
-        draw_heatmap();
+	if (data.length != oldDataLength) {
+    	oldDataLength = data.length;
+    	
+        redraw();
+        drawScatterplot(true);
+
+        resize(true);
     } else {
-       	setTimeout(waitForDataLoad, 100);
+       	setTimeout(waitForDataLoad, 1000);
     }
 }
 
@@ -87,11 +88,10 @@ function resize(scatterplot) {
 }
 
 function redraw() {
-    console.log("redraw");
     var f = (typeof geoplotSvg !== 'undefined');
     if (f) {
-        draw_geoplot();        
-        draw_heatmap();
+        if (show_geoplot) draw_geoplot();        
+        if (show_heatmap) draw_heatmap();
     } else {
         setTimeout(redraw, 50);
     }
@@ -158,9 +158,6 @@ function select_match()
     currentMatch = currentMatch.split('data/')[2];
     replacejsfile(currentMatch, 'data/heatmap/'+matchID+'.js', 'js', 'current_heatmap');
     waitForDataLoad();
-
-    // redraw();
-    drawScatterplot(true);
 }
 
 function changeSelection(selection) {
