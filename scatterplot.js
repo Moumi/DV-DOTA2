@@ -18,7 +18,7 @@ var y = d3.scale.linear()
     .range([lpHeight, 0]);
     
 var x2 = d3.scale.linear()
-    .domain(x.domain())
+    .domain([0, d3.max(distanceData['radiant'].concat(distanceData['dire']), function(d) { return d.tsync; })])
     .range([0, lpWidth]);
 
 var y2 = d3.scale.linear()
@@ -73,7 +73,12 @@ var line2 = d3.svg.line()
              .interpolate("basis"); 
 
 var firstTime = true;
-function drawScatterplot() {
+function drawScatterplot(resetDomain) {
+  if (resetDomain === 'undefined') resetDomain = false;
+  if (resetDomain) {
+    x2.domain([0, d3.max(distanceData['radiant'].concat(distanceData['dire']), function(d) { return d.tsync; })]);
+  }
+
   focus.selectAll("g").remove();
   focus.selectAll(".line").remove();
   focus.selectAll(".line2").remove();
