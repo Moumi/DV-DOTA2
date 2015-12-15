@@ -72,14 +72,7 @@ var line2 = d3.svg.line()
              .y(function(d){return y2(d.DD) })  //d3.format(".3f")(d.DD));})
              .interpolate("basis"); 
 
-function init() {
-  var firstTime = true;
-  if (firstTime) {
-    brushed();
-    firstTime = false;
-  }
-}
-
+var firstTime = true;
 function drawScatterplot() {
   focus.selectAll("g").remove();
   focus.selectAll(".line").remove();
@@ -218,8 +211,7 @@ function drawScatterplot() {
       .text("Dire");
 }
 
-init();
-
+brushed();
 function brushed() {
   x.domain(brush.empty() ? x2.domain() : brush.extent());
   focus.select(".line").attr("d", line(distanceData['radiant']));
@@ -228,11 +220,14 @@ function brushed() {
   timeFrame = brush.extent();
 
   // Redraw
-  draw_heatmap(); 
-  draw_geoplot(); 
+  if (!firstTime) {
+    draw_heatmap(); 
+    draw_geoplot(); 
+  }
 }
 
 function resizeScatterplot() {
+  firstTime = false;
   linePlotMargin = {top: 20, right: 20, bottom: viewHeight - ( (3/4)*viewHeight), left: 40};
   selectionPlotMargin = {top: viewHeight - ( (1/6)*viewHeight), right: 20, bottom: 20, left: 40};
   lpWidth = viewWidth - linePlotMargin.left - linePlotMargin.right;
