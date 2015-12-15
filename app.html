@@ -12,16 +12,18 @@
 		<div class="container">
 	   		<div id="geoplot">
 	   			<svg></svg>
-	   			<div class="container">
-					<div id="matchesbox">
-						match: 
-						<select id="matchBox" onchange="select_match()"></select>
-	                </div>
-	            </div>
 			</div>
 			<div id="scatterplot">
 	   			<svg></svg>
 	   		</div>
+	   		<div class="container">
+	   			<div id="ui">
+	   				<div id="match selection">
+						tier: <select id="tierBox" onchange="select_tier()"></select>
+						match: <select id="matchBox" onchange="select_match()"></select>
+	                </div>
+	            </div>
+	        </div>
    		</div>
 		
 		<script id="current_heatmap" type="text/javascript" src="data/heatmap/580607270.js"></script>

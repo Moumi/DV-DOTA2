@@ -68,14 +68,44 @@ function waitForDataLoad() {
 
 }
 
-function fill_combobox() {
-	var select = document.getElementById("matchBox");
-	for(var i = 0; i < matches.length; i++) {
-            var option = matches[i];
+function fill_tier_box() {
+    var select = document.getElementById("tierBox");
+    for(var i = 0; i < matches.length; i++) {
+        var option = matches[i]["tier"];
+        var found = false;
+        for (j = 0; j < select.length; j++){
+            if (select.options[j].value == option){
+                found = true;
+            }
+        }
+        if(!found) {
             var element = document.createElement("option");
             element.textContent = option;
             element.value = option;
             select.appendChild(element);
+        }
+    }
+    select.selectedIndex = 0;
+}
+
+function select_tier() {
+    fill_match_box();
+    select_match();
+}
+
+function fill_match_box() {
+    var tierBox = document.getElementById("tierBox");
+    var tier = tierBox.options[tierBox.selectedIndex].value;
+	var select = document.getElementById("matchBox");
+    select.options.length = 0;
+	for(var i = 0; i < matches.length; i++) {
+        if(matches[i]["tier"] === tier) {
+            var option = matches[i]["match"];
+            var element = document.createElement("option");
+            element.textContent = option;
+            element.value = option;
+            select.appendChild(element);
+        }
 	}
 	select.selectedIndex = 0;
 }
@@ -88,12 +118,12 @@ function select_match()
     var currentMatch = 'data/'+document.getElementById("current_data").src;
     currentMatch = currentMatch.split('data/')[2];
     replacejsfile(currentMatch, 'data/geoplot/'+matchID+'.js', 'js', 'current_data');
-    waitForDataLoad();
+    //waitForDataLoad();
     // replace distance file
     var currentMatch = 'data/'+document.getElementById("current_distance").src;
     currentMatch = currentMatch.split('data/')[2];
     replacejsfile(currentMatch, 'data/distance/'+matchID+'_master-distance.js', 'js', 'current_distance');
-    waitForDataLoad();
+    //waitForDataLoad();
     // replace heatmap file
     var currentMatch = 'data/'+document.getElementById("current_heatmap").src;
     currentMatch = currentMatch.split('data/')[2];
@@ -101,6 +131,7 @@ function select_match()
     waitForDataLoad();
 }
 
-fill_combobox();
+fill_tier_box();
+fill_match_box();
 select_match();
 draw_background("#geoplot"); 
