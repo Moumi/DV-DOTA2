@@ -21,8 +21,10 @@ function intToRGB(i){
 }
 
 function draw_geoplot() {	
-	init();	
-	draw_lines();
+	if(show_geoplot) {
+		init();	
+		draw_lines();
+	}
 }
 
 function init() {
@@ -210,12 +212,21 @@ function draw_lines() {
 
 function resizeGeoplot()
 {	
-	geoplotSvg.selectAll("*").remove();
-	geoplotSvg.style("width",viewWidth);//leave some room for the buttons and text
-	geoplotSvg.style("height",viewHeight);//leave some room for the buttons and text
-		
-	draw_background("#geoplot");
-	draw_geoplot();
+	if(show_geoplot) {
+		geoplotSvg.selectAll("*").remove();
+		geoplotSvg.style("width",viewWidth);//leave some room for the buttons and text
+		geoplotSvg.style("height",viewHeight);//leave some room for the buttons and text
+			
+		draw_background("#geoplot");
+		draw_geoplot();
+	}
+}
+
+function removeGeoplot()
+{
+	geoplotSvg.selectAll("marker").remove();
+	geoplotSvg.selectAll(".line").remove();
+	geoplotSvg.selectAll(".line-dashed").remove();
 }
 
 function distance(x1, y1, x2, y2) {

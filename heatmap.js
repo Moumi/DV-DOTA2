@@ -16,6 +16,9 @@ function index_(x, y) {
 }
 
 function draw_heatmap() {
+  if(!show_heatmap) {
+    return
+  }
   geoplotSvg.selectAll('rect').remove();
 
   var dataHeatmap = [];
@@ -83,9 +86,15 @@ function draw_heatmap() {
 }
 
 function resizeHeatmap() {
-  d3.select("#scatterplot").select("svg")
-    .attr("width", viewWidth)
-    .attr("height", viewHeight)
-    
-  draw_heatmap();
+  if(show_heatmap) {
+    d3.select("#scatterplot").select("svg")
+      .attr("width", viewWidth)
+      .attr("height", viewHeight)
+      
+    draw_heatmap();
+  }
+}
+
+function removeHeatmap() {
+  geoplotSvg.selectAll('rect').remove();
 }
