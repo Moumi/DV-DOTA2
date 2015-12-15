@@ -65,7 +65,19 @@ function waitForDataLoad() {
     } else {
        	setTimeout(waitForDataLoad, 100);
     }
+}
 
+function redraw(scatterplot) {
+    var f = (typeof geoplotSvg !== 'undefined');
+    if (f) {
+        draw_geoplot();        
+        draw_heatmap();
+        if (scatterplot)
+            drawScatterplot();
+        // f = false;
+    } else {
+        setTimeout(redraw, 50, scatterplot);
+    }
 }
 
 function fill_tier_box() {
@@ -118,20 +130,22 @@ function select_match()
     var currentMatch = 'data/'+document.getElementById("current_data").src;
     currentMatch = currentMatch.split('data/')[2];
     replacejsfile(currentMatch, 'data/geoplot/'+matchID+'.js', 'js', 'current_data');
-    //waitForDataLoad();
+    waitForDataLoad();
     // replace distance file
     var currentMatch = 'data/'+document.getElementById("current_distance").src;
     currentMatch = currentMatch.split('data/')[2];
     replacejsfile(currentMatch, 'data/distance/'+matchID+'_master-distance.js', 'js', 'current_distance');
-    //waitForDataLoad();
+    waitForDataLoad();
     // replace heatmap file
     var currentMatch = 'data/'+document.getElementById("current_heatmap").src;
     currentMatch = currentMatch.split('data/')[2];
     replacejsfile(currentMatch, 'data/heatmap/'+matchID+'.js', 'js', 'current_heatmap');
     waitForDataLoad();
+
+    redraw(true);
 }
 
 fill_tier_box();
 fill_match_box();
-select_match();
+select_tier();
 draw_background("#geoplot"); 
