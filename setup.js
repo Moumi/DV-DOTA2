@@ -5,6 +5,8 @@ var margin = {top: 15, right: 15, bottom: 50, left: 15};
 var viewWidth = windowWidth/2 - margin.left - margin.right;
 var viewHeight = windowHeight - margin.top - margin.bottom;
 
+var timeFrame = [0, 120];
+
 var scatterplot = d3.select("#scatterplot")
     .style("float", "left")
   .select("svg")
@@ -18,13 +20,6 @@ var geoplot = d3.select("#geoplot")
     .attr("width", viewWidth)
     .attr("height", viewHeight)
     .append("g");
-
-// var heatmap = d3.select("#heatmap")
-//     .style("float", "left")
-//   .select("svg")
-//     .attr("width", viewWidth)
-//     .attr("height", viewHeight)
-//     .append("g");
 
 var initLoaded = false;
 function resize() {  
