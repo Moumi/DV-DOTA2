@@ -5,7 +5,7 @@ var margin = {top: 15, right: 15, bottom: 50, left: 15};
 var viewWidth = windowWidth/2 - margin.left - margin.right;
 var viewHeight = windowHeight - margin.top - margin.bottom;
 
-var timeFrame = [0, 120];
+var timeFrame = [370, 430];
 
 var scatterplot = d3.select("#scatterplot")
     .style("float", "left")
@@ -46,7 +46,7 @@ function resize() {
   if (!initLoaded) {
     init();
   } else {
-    redraw(true);
+    resize(true);
   }
 }
 
@@ -59,5 +59,5 @@ function init() {
 }
 
 
-resize();
+resize(true);
 d3.select(window).on("resize", resize);

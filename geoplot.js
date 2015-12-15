@@ -62,43 +62,52 @@ function init() {
 
 function marker_start(color, val) 
 {
-	geoplotSvg.append("defs").append("marker")
-		.attr("id", val)
-		.attr("viewBox","-6 -6 12 12")
-		.attr("refX", 0)
-		.attr("refY", 0)
-		.attr("markerWidth", 4)
-		.attr("markerHeight", 4)
-		.attr("orient", "auto")
-		.style("fill",color)
-		.attr("stroke-width", 1)
-		.attr("stroke","black")
-		.append("path")
-			.attr("d", "M 0, 0  m -5, 0  a 5,5 0 1,0 10,0  a 5,5 0 1,0 -10,0"); //this is actual shape for arrowhead (a triangle)
+	geoplotSvg
+		.append("defs")
+			.attr("class", "marker_start_")
+		.append("marker")
+			.attr("id", val)
+			.attr("viewBox","-6 -6 12 12")
+			.attr("refX", 0)
+			.attr("refY", 0)
+			.attr("markerWidth", 4)
+			.attr("markerHeight", 4)
+			.attr("orient", "auto")
+			.style("fill",color)
+			.attr("stroke-width", 1)
+			.attr("stroke","black")
+			.append("path")
+				.attr("d", "M 0, 0  m -5, 0  a 5,5 0 1,0 10,0  a 5,5 0 1,0 -10,0"); //this is actual shape for arrowhead (a triangle)
 	return "url(#" +val+ ")";
 }
 
 function marker_end(color, val) 
 {
-	geoplotSvg.append("defs").append("marker")
-		.attr("id", val)
-		.attr("viewBox","-10 0 10 10")
-		.attr("refX", 0)
-		.attr("refY", 3)
-		.attr("markerWidth", 4)
-		.attr("markerHeight", 4)
-		.attr("orient", "auto")
-		.style("fill",color)
-		.attr("stroke-width", 1)
-		.attr("stroke","black")
-		.append("path")
-			.attr("d", "M -10 0 L 0 5 L -10 10 Z"); //this is actual shape for arrowhead (a triangle)
+	geoplotSvg
+		.append("defs")
+			.attr("class", "marker_end_")
+		.append("marker")
+			.attr("id", val)
+			.attr("viewBox","-10 0 10 10")
+			.attr("refX", 0)
+			.attr("refY", 3)
+			.attr("markerWidth", 4)
+			.attr("markerHeight", 4)
+			.attr("orient", "auto")
+			.style("fill",color)
+			.attr("stroke-width", 1)
+			.attr("stroke","black")
+			.append("path")
+				.attr("d", "M -10 0 L 0 5 L -10 10 Z"); //this is actual shape for arrowhead (a triangle)
 	return "url(#" +val+ ")";
 }
 
 function draw_lines() {
 	// begin of drawing lines
 	geoplotSvg.selectAll("marker").remove();
+	geoplotSvg.selectAll("g").remove();
+	geoplotSvg.selectAll(".marker_end_").remove();
+	geoplotSvg.selectAll(".marker_start_").remove();
 
 	var line = d3.svg.line()
 	    .x(function(d){return geoX(parseInt(d.x));})
@@ -112,11 +121,7 @@ function draw_lines() {
 	var paths = geoplotSvg.selectAll("path")
 		.data(playerNestData);
 
-	// TEMP
-	var dataExtremes = []; var firstShit = true;
-
-	geoplotSvg.selectAll(".line").remove();
-	geoplotSvg.selectAll(".line-dashed").remove();
+	// Iteratoe over player nested data
 	for (var k in playerNestData) {
 		// Name of player
 		var playerName = playerNestData[k].key;
@@ -170,7 +175,7 @@ function draw_lines() {
         }
         if (regularWalkData.length < 1) // No teleports happened or did not die
         	regularWalkData.push(regularWalk);
-        
+
         var playerGroup = geoplotSvg
         	.append("g")
         		.attr("player", playerName);
@@ -178,6 +183,9 @@ function draw_lines() {
         var walkGroup = playerGroup
         	.append("g")
         		.attr("class", "regularWalk");
+        // var heatGroup = playerGroup
+        // 	.append("g")
+        // 		.attr("class", "heat");
 
         for (var i = 0; i < regularWalkData.length; i++) {
         	walkGroup
@@ -189,6 +197,26 @@ function draw_lines() {
 					.attr("fill", "none")
 					.style("marker-start", marker_start("#" + strokeColor, "start_marker_" + k))
 					.style("marker-end", marker_end("#" + strokeColor, "end_marker_" + k));
+
+			// var colorScale = d3.scale.linear()
+   //  			.domain([0, 15])
+   //  			.range(["white", "red"]);
+
+   //  		var opacityScale = d3.scale.linear()
+   //  			.domain([0, 15])
+   //  			.range([0.2, 1.0]);
+
+			// heatGroup.selectAll("rect")
+			// 	.data(doubles(regularWalkData)).enter()
+			// 	.append("rect")
+			// 		.attr("class", "heatRect")
+			// 		.attr("x", function(d) { return parseInt(geoX(d.x)); })
+			// 		.attr("y", function(d) { return parseInt(geoY(d.y)); })
+			// 		.attr("count", function(d) { return d.count; })
+			// 		.attr("width", 10)
+			// 		.attr("height", 10)
+			// 		.style("fill", function(d) { return colorScale(d.count); })
+			// 	    .style("opacity", function(d) { return opacityScale(d.count); });
         }
 
         var teleportGroup = playerGroup
@@ -206,6 +234,33 @@ function draw_lines() {
 		            .style("stroke-dasharray", "5, 10");
         }
 	}
+}
+
+function getElement(data, element) {
+	var x = element.x; var y = element.y;
+	for (var i = 0; i < data.length; i++) {
+		if (data[i].x == x && data[i].y == y) {
+			return data[i];
+		}
+	}
+	return null;
+}
+
+function doubles(data) {
+	var newData = [];
+	for (var i = 0; i < data.length; i++) {
+		for (var j = 0; j < data[i].length; j++) {
+			var element = data[i][j]; // Element from regularWalkData
+
+			var obj = getElement(newData, element);
+			if (obj != null) { // exists already
+				obj.count += 1;
+			} else { // add it
+				newData.push({"x": element.x, "y": element.y, "count": 1});
+			}
+		}
+	}
+	return newData;
 }
 
 function resizeGeoplot()

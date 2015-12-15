@@ -67,16 +67,26 @@ function waitForDataLoad() {
     }
 }
 
-function redraw(scatterplot) {
+function resize(scatterplot) {
+    var f = (typeof geoplotSvg !== 'undefined');
+    if (f) {
+        resizeGeoplot();        
+        resizeHeatmap();
+        if (scatterplot)
+            resizeScatterplot();
+    } else {
+        setTimeout(resize, 50, scatterplot);
+    }
+}
+
+function redraw() {
+    console.log("redraw");
     var f = (typeof geoplotSvg !== 'undefined');
     if (f) {
         draw_geoplot();        
         draw_heatmap();
-        if (scatterplot)
-            drawScatterplot();
-        // f = false;
     } else {
-        setTimeout(redraw, 50, scatterplot);
+        setTimeout(redraw, 50);
     }
 }
 
@@ -122,10 +132,11 @@ function fill_match_box() {
 	select.selectedIndex = 0;
 }
 
+var matchID = null;
 function select_match()
 {
     var e = document.getElementById("matchBox");
-    var matchID = e.options[e.selectedIndex].value;
+    matchID = e.options[e.selectedIndex].value;
     // replace data file
     var currentMatch = 'data/'+document.getElementById("current_data").src;
     currentMatch = currentMatch.split('data/')[2];
@@ -142,7 +153,7 @@ function select_match()
     replacejsfile(currentMatch, 'data/heatmap/'+matchID+'.js', 'js', 'current_heatmap');
     waitForDataLoad();
 
-    redraw(true);
+    resize(true);
 }
 
 fill_tier_box();

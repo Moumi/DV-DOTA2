@@ -20,7 +20,7 @@ function draw_heatmap() {
 
   var dataHeatmap = [];
   for (var tsync in heatmapData) {
-    if (tsync >= timeFrame[0] && tsync <= timeFrame[1]) {
+    if (parseInt(tsync) >= timeFrame[0] && parseInt(tsync) <= timeFrame[1]) {
       var dataTsync = heatmapData[tsync]; // array of tsync
       for (var element in dataTsync) { // iterate over array
         dataHeatmap.push(dataTsync[element]); // push element seperately
@@ -60,13 +60,18 @@ function draw_heatmap() {
 
   var minCount = d3.min(binData, function(d) { return d.count; });
   var maxCount = d3.max(binData, function(d) { return d.count; });
+
   var colorScale = d3.scale.linear()
-    .domain([(maxCount / binData.length), maxCount])
+    .domain([minCount, maxCount])
     .range(["yellow", "red"]);
 
   var attrScale = d3.scale.linear()
     .domain([0, range])
     .range([0, viewHeight]);
+
+  var opacityScale = d3.scale.linear()
+    .domain([minCount, maxCount])
+    .range([0.2, 0.2]);
 
   rects.enter()
     .append("rect")
@@ -79,7 +84,7 @@ function draw_heatmap() {
       .style("fill", function(d) {
         return colorScale(d.count);
       })
-      .style("opacity", function(d) { if (d.count == 0) return 0; else return 0.7; });
+      .style("opacity", function(d) { return d.count == 0 ? 0 : 0.5; });
 }
 
 function resizeHeatmap() {

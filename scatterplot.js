@@ -7,8 +7,6 @@ var lpHeight2 = viewHeight - selectionPlotMargin.top - selectionPlotMargin.botto
 var xExtent = d3.extent(distanceData['radiant'].concat(distanceData['dire']), function(d) { return d.tsync });
 var yExtent = d3.extent(distanceData['radiant'].concat(distanceData['dire']), function(d) { return d.DD }); 
 
-var timeFrame = [0,120];
-
 var x = d3.scale.linear()
     .domain(xExtent).nice()
     .range([0, lpWidth]);
@@ -220,11 +218,8 @@ function brushed() {
   timeFrame = brush.extent();
 
   // Redraw
-  if (firstTime) {
-    if (typeof draw_heatmap !== 'undefined') {
-      redraw(false);
-    }
-  }
+  if (typeof redraw !== 'undefined')
+    redraw();
 }
 
 function resizeScatterplot() {
