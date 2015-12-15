@@ -220,9 +220,10 @@ function brushed() {
   timeFrame = brush.extent();
 
   // Redraw
-  if (!firstTime) {
-    draw_heatmap(); 
-    draw_geoplot(); 
+  if (firstTime) {
+    if (typeof draw_heatmap !== 'undefined') {
+      redraw(false);
+    }
   }
 }
 
