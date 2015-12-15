@@ -31,7 +31,7 @@ for i in range(1,48):
     if not Continue:
         break;
 
-    filename = 'master-zones-splitted/master-zones-'+str(i)+'.csv'
+    filename = '../Game/Data/master-zones-splitted/master-zones-'+str(i)+'.csv'
     with open(filename, 'rb') as csvfile:
         print " "+filename
         reader = csv.reader(csvfile)
@@ -77,7 +77,7 @@ for match in matches:
     master_distance[match] = dict()
 
 print "Processing:"
-with open('master-distance/master-distance.csv', 'rb') as csvfile:
+with open('../Game/Data/master-distance/master-distance.csv', 'rb') as csvfile:
     print " master-distance/master-distance.csv"
     reader = csv.reader(csvfile)
     headers = reader.next() #[match   team   tsync   DD   Tier   Win Lose]

@@ -46,20 +46,14 @@ function resize() {
   if (!initLoaded) {
     init();
   } else {
-    resizeGeoplot();
-    resizeHeatmap();
-    resizeScatterplot();
+    redraw(true);
   }
 }
 
 function init() {
   if (typeof resizeGeoplot !== 'undefined') {
-    resizeGeoplot();
-    resizeHeatmap();
-    resizeScatterplot();
     initLoaded = true;
   } else {
-    //console.log("waiting...");
     setTimeout(init, 100);
   }
 }
