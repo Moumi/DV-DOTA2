@@ -71,8 +71,6 @@ function draw_heatmap() {
   rects.enter()
     .append("rect")
       .attr("class", "unit")
-      .attr("y_", function(d) { return (d.x); })
-      .attr("x_", function(d) { return (d.y); }) 
       .attr("y", function(d) { return geoY(d.x) - attrScale(steps) + 1; })
       .attr("x", function(d) { return geoX(d.y) - (attrScale(steps) / 10); })
       .attr("count", function(d) { return d.count; })

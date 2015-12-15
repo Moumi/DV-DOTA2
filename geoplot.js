@@ -132,46 +132,44 @@ function draw_lines() {
         // Data filtered on the selected timeframe
         var dataFiltered = dataSorted.filter(function(d, i) {
         	if (d.tsync >= timeFrame[0] && d.tsync <= timeFrame[1]) {
-        		var p1 = dataSorted[i]; var p2 = dataSorted[i+1];
-        		if (p2 != undefined) {
-        			var dist = distance(p1.x, p1.y, p2.x, p2.y);
-        			// if (dist == 0) 
-        				// return false;
-        		}
         		return true;
 	        }
         });
 
         var teleportData = [];
         var regularWalkData = [];
-        // if (playerName == "god") {
-        	var regularWalk = [];
-        	for (var i = 0; i < dataFiltered.length - 1; i++) {
-        		var d1 = dataFiltered[i]; var d2 = dataFiltered[i+1];
-        		if (typeof d2 === 'undefined' || typeof d1 === 'undefined')
-        			continue;
+        var regularWalk = [];
+        for (var i = 0; i < dataFiltered.length - 1; i++) {
+        	var d1 = dataFiltered[i]; var d2 = dataFiltered[i+1];
+        	if (typeof d2 === 'undefined' || typeof d1 === 'undefined')
+        		continue;
 
-        		var dist = distance(d1.x, d1.y, d2.x, d2.y);
-        		if (dist > 5) {
-        			// Add teleport elements
-        			if (regularWalk.length >= 1) {
-	        			if (d1.x == regularWalk[0].x && 
-	        				d1.y == regularWalk[0].y && d2.x == regularWalk[regularWalk.length - 1].x && d2.y == regularWalk[regularWalk.length - 1].y ||
-	        				d2.x == regularWalk[0].x && d2.y == regularWalk[0].y && d1.x == regularWalk[regularWalk.length - 1].x && d1.y == regularWalk[regularWalk.length - 1].y) {
-	        			} else {
-							teleportData.push([d1, d2]);
-	        			}
-        			}
-
-					// Add the regular walk path
-        			regularWalkData.push(regularWalk);
-        			regularWalk = [];
-        		} else {
-        			regularWalk.push(d1);
-        			regularWalk.push(d2);
+        	var dist = distance(d1.x, d1.y, d2.x, d2.y);
+        	if (dist > 5) {
+        		// regularWalk is not empty
+        		if (regularWalk.length >= 1) {
+        			// In case the begin and end points of regularWalk are the same as d1 and d2, do nothing
+	        		if (d1.x == regularWalk[0].x && 
+	        			d1.y == regularWalk[0].y && d2.x == regularWalk[regularWalk.length - 1].x && d2.y == regularWalk[regularWalk.length - 1].y ||
+	        			d2.x == regularWalk[0].x && d2.y == regularWalk[0].y && d1.x == regularWalk[regularWalk.length - 1].x && d1.y == regularWalk[regularWalk.length - 1].y) {
+	        			// do Nothing
+	        		} else {
+	        			// Otherwise it's a teleport/die situation
+						teleportData.push([d1, d2]);
+	        		}
         		}
+					
+				// Add the regular walk path
+       			regularWalkData.push(regularWalk);
+        		regularWalk = [];
+        	} else {
+        		// Add the paths
+        		regularWalk.push(d1);
+        		// regularWalk.push(d2);
         	}
-        // }
+        }
+        if (regularWalkData.length < 1) // No teleports happened or did not die
+        	regularWalkData.push(regularWalk);
         
         var playerGroup = geoplotSvg
         	.append("g")
