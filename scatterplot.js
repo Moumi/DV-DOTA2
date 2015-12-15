@@ -220,7 +220,7 @@ function brushed() {
   timeFrame = brush.extent();
 
   // Redraw
-  if (typeof draw_heatmap !== 'undefined') {
+  if (typeof redraw !== 'undefined') {
     redraw();
   }
 }
