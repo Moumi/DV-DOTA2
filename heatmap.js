@@ -16,9 +16,13 @@ function index_(x, y) {
 }
 
 function draw_heatmap() {
-  if(!show_heatmap) {
-    return
+  if(show_heatmap) {
+    init(); 
+    draw_heatmap_rects();
   }
+}
+
+function draw_heatmap_rects() {
   geoplotSvg.selectAll('rect').remove();
 
   var dataHeatmap = [];
@@ -64,8 +68,8 @@ function draw_heatmap() {
   var minCount = d3.min(binData, function(d) { return d.count; });
   var maxCount = d3.max(binData, function(d) { return d.count; });
   var colorScale = d3.scale.linear()
-    .domain([(maxCount / binData.length), maxCount])
-    .range(["yellow", "red"]);
+    .domain([(maxCount / binData.length), 0, maxCount])
+    .range(["blue", "white", "red"]);
 
   var attrScale = d3.scale.linear()
     .domain([0, range])
@@ -87,10 +91,11 @@ function draw_heatmap() {
 
 function resizeHeatmap() {
   if(show_heatmap) {
-    d3.select("#scatterplot").select("svg")
+    d3.select("#heatmap").select("svg")
       .attr("width", viewWidth)
       .attr("height", viewHeight)
       
+    draw_background("#geoplot");
     draw_heatmap();
   }
 }

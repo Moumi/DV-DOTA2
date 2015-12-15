@@ -4,12 +4,19 @@ var show_heatmap = document.getElementById('radio_heatmap').checked;
 function draw_background(id)
 {
 	var vis = d3.select(id).select("svg");
+    vis.select("#image").remove();
 	
-	var width = vis.style("width").replace("px", "");
-    var height = vis.style("height").replace("px", "");
+	var width = vis.attr("width");
+    var height = vis.attr("height"); 
 
+    vis.style("width", width);
+    vis.style("height", height);
+    vis.attr("width", width);
+    vis.attr("height", height);
 	
-	var defs= vis.append('defs')
+    var group = vis.append("g").attr("id", "image");
+
+	var defs= group.append('defs')
 		defs.append("pattern")
 			.attr("id", "bg_image")
 			.attr("patternUnits", "userSpaceOnUse")
@@ -23,7 +30,7 @@ function draw_background(id)
 			.attr("x", 0)
 			.attr("y", 0);
 	
-	vis.append("a")
+	group.append("a")
 		.append("path")
 		.attr("id","texture_path")
 		.attr("d", "M 0,0, "+width+",0, "+width+","+height+", 0,"+height+", 0,0 z")
@@ -67,16 +74,26 @@ function waitForDataLoad() {
     }
 }
 
-function redraw(scatterplot) {
+function resize(scatterplot) {
+    var f = (typeof geoplotSvg !== 'undefined');
+    if (f) {
+        resizeGeoplot();        
+        resizeHeatmap();
+        if (scatterplot)
+            resizeScatterplot();
+    } else {
+        setTimeout(resize, 50, scatterplot);
+    }
+}
+
+function redraw() {
+    console.log("redraw");
     var f = (typeof geoplotSvg !== 'undefined');
     if (f) {
         draw_geoplot();        
         draw_heatmap();
-        if (scatterplot)
-            drawScatterplot();
-        // f = false;
     } else {
-        setTimeout(redraw, 50, scatterplot);
+        setTimeout(redraw, 50);
     }
 }
 
@@ -142,7 +159,8 @@ function select_match()
     replacejsfile(currentMatch, 'data/heatmap/'+matchID+'.js', 'js', 'current_heatmap');
     waitForDataLoad();
 
-    redraw(true);
+    redraw();
+    drawScatterplot();
 }
 
 function changeSelection(selection) {
@@ -150,15 +168,17 @@ function changeSelection(selection) {
     show_geoplot = true;
     show_heatmap = false;
     removeHeatmap();
-    draw_geoplot()
+    resizeGeoplot();
   }
   if(selection === "heatmap") {
     show_geoplot = false;
     show_heatmap = true;
-    removeGeoplot()
-    draw_heatmap()
+    draw_geoplot();
+    removeGeoplot();
+    resizeHeatmap();
   }
 }
+
 fill_tier_box();
 fill_match_box();
 select_tier();

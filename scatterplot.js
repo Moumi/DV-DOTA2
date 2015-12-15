@@ -220,10 +220,8 @@ function brushed() {
   timeFrame = brush.extent();
 
   // Redraw
-  if (firstTime) {
-    if (typeof draw_heatmap !== 'undefined') {
-      redraw(false);
-    }
+  if (typeof draw_heatmap !== 'undefined') {
+    redraw();
   }
 }
 
@@ -255,11 +253,6 @@ function resizeScatterplot() {
     .attr("transform", "translate(" + selectionPlotMargin.left + "," + selectionPlotMargin.top + ")");
   brush
     .extent(timeFrame);
-    // console.log("range "+x2.range());
-    // console.log("domain "+x2.domain());
-    // console.log("xExtent "+xExtent);
-    // console.log("brush extent "+brush.extent());
-
 
   drawScatterplot();
 }

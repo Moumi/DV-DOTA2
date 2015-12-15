@@ -3,7 +3,6 @@ var geoplotSvg = d3.select("#geoplot").select("svg")
     .attr("height", viewHeight)
 
 var geoX; var geoY;
-
 function hashCode(str) { // java String#hashCode
     var hash = 0;
     for (var i = 0; i < str.length; i++) {
@@ -223,9 +222,13 @@ function resizeGeoplot() {
 
 function removeGeoplot()
 {
+	geoplotSvg.selectAll("g").remove();
+	geoplotSvg.selectAll("defs").remove();
 	geoplotSvg.selectAll("marker").remove();
 	geoplotSvg.selectAll(".line").remove();
 	geoplotSvg.selectAll(".line-dashed").remove();
+
+	draw_background("#geoplot");
 }
 
 function distance(x1, y1, x2, y2) {

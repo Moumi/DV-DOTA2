@@ -8,14 +8,14 @@ var viewHeight = windowHeight - margin.top - margin.bottom;
 var timeFrame = [0, 120];
 
 var scatterplot = d3.select("#scatterplot")
-    .style("float", "left")
+    .style("display", "inline-block")
   .select("svg")
     .attr("width", viewWidth)
     .attr("height", viewHeight)
     .append("g");
     
 var geoplot = d3.select("#geoplot")
-    .style("float", "left")
+    .style("display", "inline-block")
   .select("svg")
     .attr("width", viewWidth)
     .attr("height", viewHeight)
@@ -46,7 +46,7 @@ function resize() {
   if (!initLoaded) {
     init();
   } else {
-    redraw(true);
+    resize(true);
   }
 }
 

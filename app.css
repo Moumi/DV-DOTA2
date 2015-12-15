@@ -14,10 +14,6 @@ svg {
   shape-rendering: crispEdges;
 }
 
-/*.x.axis path {
-  display: none;
-}*/
-
 select {
 	margin: 5px;
 }
