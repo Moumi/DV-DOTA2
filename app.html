@@ -20,15 +20,20 @@
 	   			<div id="ui">
 	   				<div id="match selection">
 						tier: <select id="tierBox" onchange="select_tier()"></select>
-						match: <select id="matchBox" onchange="select_match()"></select>
+						match: <select id="matchBox" onchange="select_match()"></select> 
+						<br>
+						<form>
+							<input type="radio" name="visualization" value="traces" onchange="changeSelection('geoplot');" id="radio_geoplot" checked> player traces
+							<input type="radio" name="visualization" value="heatmap" onchange="changeSelection('heatmap');" id="radio_heatmap" > heat map
+						</form>
 	                </div>
 	            </div>
 	        </div>
    		</div>
 		
-		<script id="current_heatmap" type="text/javascript" src="data/heatmap/580607270.js"></script>
-		<script id="current_data" type="text/javascript" src="data/geoplot/580607270.js"></script>
-		<script id="current_distance" type="text/javascript" src="data/distance/569649581_master-distance.js"></script>
+		<script id="current_heatmap" type="text/javascript" src="data/heatmap/621620590.js"></script>
+		<script id="current_data" type="text/javascript" src="data/geoplot/621620590.js"></script>
+		<script id="current_distance" type="text/javascript" src="data/distance/621620590_master-distance.js"></script>
 		<script type="text/javascript" src="data/matches.js"></script>	
 		<script type="text/javascript" src="setup.js"></script>
 		<script type="text/javascript" src="scatterplot.js"></script>
