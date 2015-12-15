@@ -92,7 +92,6 @@ function redraw() {
     if (f) {
         if (show_geoplot) draw_geoplot();        
         if (show_heatmap) draw_heatmap();
-        drawScatterplot();
     } else {
         setTimeout(redraw, 50);
     }
