@@ -1,5 +1,7 @@
-var button_caption1 = "Use satellite image";
-var button_caption2 = "Use map image";
+//var button_caption1 = "Use satellite image";
+//var button_caption2 = "Use map image";
+var show_geoplot = document.getElementById('radio_geoplot').checked;
+var show_heatmap = document.getElementById('radio_heatmap').checked;
 
 function draw_background(id)
 {
@@ -130,12 +132,10 @@ function select_match()
     var currentMatch = 'data/'+document.getElementById("current_data").src;
     currentMatch = currentMatch.split('data/')[2];
     replacejsfile(currentMatch, 'data/geoplot/'+matchID+'.js', 'js', 'current_data');
-    waitForDataLoad();
     // replace distance file
     var currentMatch = 'data/'+document.getElementById("current_distance").src;
     currentMatch = currentMatch.split('data/')[2];
     replacejsfile(currentMatch, 'data/distance/'+matchID+'_master-distance.js', 'js', 'current_distance');
-    waitForDataLoad();
     // replace heatmap file
     var currentMatch = 'data/'+document.getElementById("current_heatmap").src;
     currentMatch = currentMatch.split('data/')[2];
@@ -143,6 +143,21 @@ function select_match()
     waitForDataLoad();
 
     redraw(true);
+}
+
+function changeSelection(selection) {
+  if(selection === "geoplot") {
+    show_geoplot = true;
+    show_heatmap = false;
+    removeHeatmap();
+    draw_geoplot()
+  }
+  if(selection === "heatmap") {
+    show_geoplot = false;
+    show_heatmap = true;
+    removeGeoplot()
+    draw_heatmap()
+  }
 }
 
 fill_tier_box();
