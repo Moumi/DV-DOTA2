@@ -73,7 +73,14 @@ var line2 = d3.svg.line()
              .interpolate("basis"); 
 
 var firstTime = true;
-function drawScatterplot() {
+function drawScatterplot(resetDomain = false) {
+  if(resetDomain) {
+    xExtent = d3.extent(distanceData['radiant'].concat(distanceData['dire']), function(d) { return d.tsync });
+    yExtent = d3.extent(distanceData['radiant'].concat(distanceData['dire']), function(d) { return d.DD }); 
+    x2.domain(xExtent).nice();
+    y2.domain(yExtent).nice();
+  }
+
   focus.selectAll("g").remove();
   focus.selectAll(".line").remove();
   focus.selectAll(".line2").remove();

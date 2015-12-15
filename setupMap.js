@@ -160,7 +160,7 @@ function select_match()
     waitForDataLoad();
 
     redraw();
-    drawScatterplot();
+    drawScatterplot(true);
 }
 
 function changeSelection(selection) {
