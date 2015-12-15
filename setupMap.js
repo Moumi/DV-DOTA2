@@ -61,7 +61,7 @@ function waitForDataLoad() {
     	tempT = data[0].t;
     	draw_geoplot();
         drawScatterplot();
-        drawHeatmap();
+        draw_heatmap();
     } else {
        	setTimeout(waitForDataLoad, 100);
     }

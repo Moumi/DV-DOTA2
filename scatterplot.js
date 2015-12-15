@@ -1,19 +1,28 @@
-var linePlotMargin = {top: 20, right: 20, bottom: 100, left: 40};
-var selectionPlotMargin = {top: 300, right: 20, bottom: 20, left: 40};
+var linePlotMargin = {top: 20, right: 20, bottom: viewHeight - ( (3/4)*viewHeight), left: 40};
+var selectionPlotMargin = {top: viewHeight - ( (1/6)*viewHeight), right: 20, bottom: 20, left: 40};
 var lpWidth = viewWidth - linePlotMargin.left - linePlotMargin.right;
 var lpHeight = viewHeight - linePlotMargin.top - linePlotMargin.bottom;
 var lpHeight2 = viewHeight - selectionPlotMargin.top - selectionPlotMargin.bottom;
 
+var xExtent = d3.extent(distanceData['radiant'].concat(distanceData['dire']), function(d) { return d.tsync });
+var yExtent = d3.extent(distanceData['radiant'].concat(distanceData['dire']), function(d) { return d.DD }); 
+
+var timeFrame = [0,120];
+
 var x = d3.scale.linear()
+    .domain(xExtent).nice()
     .range([0, lpWidth]);
 
 var y = d3.scale.linear()
+    .domain(yExtent).nice()
     .range([lpHeight, 0]);
     
 var x2 = d3.scale.linear()
+    .domain(x.domain())
     .range([0, lpWidth]);
 
 var y2 = d3.scale.linear()
+    .domain(y.domain())
     .range([lpHeight2, 0]);
 
 var xAxis = d3.svg.axis()
@@ -30,25 +39,27 @@ var yAxis = d3.svg.axis()
     
 var brush = d3.svg.brush()
     .x(x2)
+    .extent(timeFrame)
     .on("brush", brushed);
 
 var scatterPlotSvg = d3.select("#scatterplot").select("svg")
     .attr("width", viewWidth)
-    .attr("height", viewHeight)
-  .append("g")
+    .attr("height", viewHeight);
+
+var focus = scatterPlotSvg.append("g")
+    .attr("player", "focus")
     .attr("transform", "translate(" + linePlotMargin.left + "," + linePlotMargin.top + ")");
 
-var context = d3.select("#scatterplot").select("svg")
-    .attr("width", viewWidth)
-    .attr("height", viewHeight)
-  .append("g")
+var context = scatterPlotSvg.append("g")
+    .attr("player", "context")
     .attr("transform", "translate(" + selectionPlotMargin.left + "," + selectionPlotMargin.top + ")");
 
 var defs = scatterPlotSvg.append( "defs" ).append("clipPath")
     .attr("id", "clip")
   .append("rect")
-    .attr("width", window.innerWidth/2 - selectionPlotMargin.left - selectionPlotMargin.right - 40) // Don't want to hard-code this, but d3 left me no choice
-    .attr("height", window.innerHeight);
+    .attr("width", lpWidth)
+    //.attr("width", window.innerWidth/2 - selectionPlotMargin.left - selectionPlotMargin.right - 40) // Don't want to hard-code this, but d3 left me no choice
+    .attr("height", viewHeight);
     //console.log(window.innerWidth);
 
 var line = d3.svg.line()
@@ -61,25 +72,24 @@ var line2 = d3.svg.line()
              .y(function(d){return y2(d.DD) })  //d3.format(".3f")(d.DD));})
              .interpolate("basis"); 
 
-function drawScatterplot() {
-	
-  var xExtent = d3.extent(distanceData['radiant'].concat(distanceData['dire']), function(d) { return d.tsync });
-  var yExtent = d3.extent(distanceData['radiant'].concat(distanceData['dire']), function(d) { return d.DD }); 
+function init() {
+  var firstTime = true;
+  if (firstTime) {
+    brushed();
+    firstTime = false;
+  }
+}
 
-  x.domain(xExtent)//.nice();
-  y.domain(yExtent)//.nice();
-  x2.domain(x.domain());
-  y2.domain(y.domain());
-  
-  scatterPlotSvg.selectAll("g").remove();
-  scatterPlotSvg.selectAll(".line").remove();
-  scatterPlotSvg.selectAll(".line2").remove();
+function drawScatterplot() {
+  focus.selectAll("g").remove();
+  focus.selectAll(".line").remove();
+  focus.selectAll(".line2").remove();
   
   context.selectAll("g").remove();
   context.selectAll(".line").remove();
   context.selectAll(".line2").remove();
 
-  scatterPlotSvg.append("g")
+  focus.append("g")
       .attr("id", "xAxis")
       .attr("class", "x axis")
       .attr("transform", "translate(0," + lpHeight + ")")
@@ -92,7 +102,7 @@ function drawScatterplot() {
       .style("text-anchor", "end")
       .text("tsync");
 
-  scatterPlotSvg.append("g")
+  focus.append("g")
       .attr("id", "yAxis")
       .attr("class", "y axis")
       .call(yAxis)
@@ -105,7 +115,7 @@ function drawScatterplot() {
       .style("text-anchor", "end")
       .text("Inter-team Distance");
 
-  scatterPlotSvg.append("path")
+  focus.append("path")
       .attr("class", "line")
       .attr("d", line(distanceData['radiant']))
       .attr("data-legend", "radiant")
@@ -114,7 +124,7 @@ function drawScatterplot() {
       .style("stroke", "green")
       .style("fill", "none");
 
-  scatterPlotSvg.append("path")
+  focus.append("path")
     .attr("class", "line2")
     .attr("d", line(distanceData['dire']))
     .attr("data-legend", "dire")
@@ -150,19 +160,21 @@ function drawScatterplot() {
       .style("text-anchor", "end")
       .text("Inter-team Distance");
 */      
-    context.append("svg:path")
+    context.append("path")
       .attr("class", "line")
       .attr("d", line2(distanceData['radiant']))
       .attr("data-legend", "radiant")
+      .attr("clip-path", "url(#clip)")
       .style("stroke-width", 1)
       .style("stroke", "green")
       .style("fill", "none");
 
       
-  context.append("svg:path")
+  context.append("path")
     .attr("class", "line2")
     .attr("d", line2(distanceData['dire']))
     .attr("data-legend", "dire")
+    .attr("clip-path", "url(#clip)")
       .style("stroke-width", 1)
       .style("stroke", "red")
       .style("fill", "none");
@@ -175,7 +187,7 @@ function drawScatterplot() {
       .attr("y", -6)
       .attr("height", lpHeight2 + 7);
       
-  var legend = scatterPlotSvg.append("g")
+  var legend = focus.append("g")
       .attr("class", "legend");
 
   legend.append("rect")
@@ -206,14 +218,23 @@ function drawScatterplot() {
       .text("Dire");
 }
 
+init();
+
 function brushed() {
   x.domain(brush.empty() ? x2.domain() : brush.extent());
-  scatterPlotSvg.select(".line").attr("d", line(distanceData['radiant']));
-  scatterPlotSvg.select(".line2").attr("d", line(distanceData['dire']));
-  scatterPlotSvg.select(".x.axis").call(xAxis);
+  focus.select(".line").attr("d", line(distanceData['radiant']));
+  focus.select(".line2").attr("d", line(distanceData['dire']));
+  focus.select(".x.axis").call(xAxis);
+  timeFrame = brush.extent();
+
+  // Redraw
+  draw_heatmap(); 
+  draw_geoplot(); 
 }
 
 function resizeScatterplot() {
+  linePlotMargin = {top: 20, right: 20, bottom: viewHeight - ( (3/4)*viewHeight), left: 40};
+  selectionPlotMargin = {top: viewHeight - ( (1/6)*viewHeight), right: 20, bottom: 20, left: 40};
   lpWidth = viewWidth - linePlotMargin.left - linePlotMargin.right;
   lpHeight = viewHeight - linePlotMargin.top - linePlotMargin.bottom;
   lpHeight2 = viewHeight - selectionPlotMargin.top - selectionPlotMargin.bottom;
@@ -227,9 +248,22 @@ function resizeScatterplot() {
   yAxis.scale(y);
   xAxis2.scale(x2);
   
+  defs
+    .attr("width", lpWidth);
   d3.select("#scatterplot").select("svg")
     .attr("width", viewWidth)
     .attr("height", viewHeight);
+  focus
+    .attr("transform", "translate(" + linePlotMargin.left + "," + linePlotMargin.top + ")");
+  context
+    .attr("transform", "translate(" + selectionPlotMargin.left + "," + selectionPlotMargin.top + ")");
+  brush
+    .extent(timeFrame);
+    // console.log("range "+x2.range());
+    // console.log("domain "+x2.domain());
+    // console.log("xExtent "+xExtent);
+    // console.log("brush extent "+brush.extent());
+
 
   drawScatterplot();
 }
