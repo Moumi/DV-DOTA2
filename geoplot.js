@@ -104,6 +104,12 @@ function draw_lines() {
 	var line = d3.svg.line()
 	    .x(function(d){return geoX(parseInt(d.x));})
 	    .y(function(d){return geoY(parseInt(d.y));})
+	    .interpolate("basis");
+
+
+	var line2 = d3.svg.line()
+	    .x(function(d){return geoX(parseInt(d.x));})
+	    .y(function(d){return geoY(parseInt(d.y));})
 	    .interpolate("linear");
 
 	var playerNestData = d3.nest()
@@ -146,7 +152,7 @@ function draw_lines() {
         		continue;
 
         	var dist = distance(d1.x, d1.y, d2.x, d2.y);
-        	if (dist > 5) {
+        	if (dist > 25) {
         		// regularWalk is not empty
         		if (regularWalk.length >= 1) {
         			// In case the begin and end points of regularWalk are the same as d1 and d2, do nothing
@@ -200,7 +206,7 @@ function draw_lines() {
         	teleportGroup
 	        	.append("path")
 					.attr("class", "line-dashed")
-					.attr("d", line(teleportData[i]))
+					.attr("d", line2(teleportData[i]))
 		        	.attr("stroke", "#" + strokeColor)
 					.attr("stroke-width", 2)
 					.attr("fill", "none")

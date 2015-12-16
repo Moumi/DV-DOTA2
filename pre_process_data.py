@@ -37,7 +37,7 @@ for i in range(1,48):
         reader = csv.reader(csvfile)
         headers = reader.next()
         headerstemp = headers
-        value_ids = [1,2,4,5,6,8,10,11]
+        value_ids = [1,2,4,5,8,10]
         types = ['int', 'int', 'int', 'int' ,'string', 'string', 'int', 'int', 'int', 'float', 'string', 'string']
 
         for row in reader:
@@ -69,7 +69,7 @@ for match in matches:
     with open('data/geoplot/'+str(match)+'.js', 'w') as outfile:
         print " data/geoplot/"+str(match)+".js"
         outfile.write("data = ")
-        json.dump(matches[match], outfile)
+        json.dump(matches[match][::5], outfile)
 
 # Read master distance data from csvfile
 master_distance = dict()
@@ -97,10 +97,13 @@ with open('../Game/Data/master-distance/master-distance.csv', 'rb') as csvfile:
 # write master-distance data of each match to a seperate file.
 print "Writing"
 for match in master_distance:
+    distances = {}
+    distances["radiant"] = master_distance[match]["radiant"][::5]
+    distances["dire"] = master_distance[match]["dire"][::5]
     with open('data/distance/'+str(match)+'_master-distance.js', 'w') as outfile:
         print " data/distance/"+str(match)+"_master-distance.js"
         outfile.write("distanceData = ")
-        json.dump(master_distance[match], outfile)
+        json.dump(distances, outfile)
 
 # write heat data of each match to a seperate file.
 print "Processing:\n heatmap"
