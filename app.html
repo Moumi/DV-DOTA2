@@ -10,13 +10,19 @@
 	<body>
 		
 		<div class="container">
-	   		<div id="geoplot">
-	   			<svg></svg>
+			<div id="geoplot_container">
+		   		<div id="geoplot"><svg></svg></div>
+		   		<div id="legend_dire_container">
+		   			<div id="dire_text">Dire team:</div>
+		   		</div>
+		   		<div id="legend_radiant_container">
+		   			<div id="radiant_text">Radiant team:</div>
+		   		</div>
 			</div>
 			<div id="scatterplot">
 	   			<svg></svg>
 	   		</div>
-	   		<div class="container_2">
+	   		<div id="container_2">
 	   			<div id="ui">
 	   				<div id="match_selection">
 						tier: <select id="tierBox" onchange="select_tier()"></select>

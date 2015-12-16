@@ -23,6 +23,7 @@ function draw_geoplot() {
 	if(show_geoplot) {
 		init();	
 		draw_lines();
+		draw_legend();
 	}
 }
 
@@ -97,6 +98,21 @@ function marker_end(color, val)
 	return "url(#" +val+ ")";
 }
 
+function delete_mini_divs() {
+	var team_text = ["dire", "radiant"];
+	var div_texts = [];
+
+	for (var i = 0; i < team_text.length; i++) {
+		var divs = document.getElementById("legend_" + team_text[i] + "_container");
+		while (divs.firstChild) {
+			var element = divs.firstChild;
+			if (element.id == team_text[i] + "_text") div_texts[i] = element;
+			divs.removeChild(element); 
+		}
+		divs.appendChild(div_texts[i]);
+	}
+}
+
 function draw_lines() {
 	// begin of drawing lines
 	geoplotSvg.selectAll("marker").remove();
@@ -118,12 +134,16 @@ function draw_lines() {
 
 	geoplotSvg.selectAll(".line").remove();
 	geoplotSvg.selectAll(".line-dashed").remove();
+	delete_mini_divs();
 	for (var k in playerNestData) {
 		// Name of player
 		var playerName = playerNestData[k].key;
 
 		// Color for the line
 		var strokeColor = intToRGB(hashCode(playerName));
+
+		// Change color of legend
+		// var mini_box = document.getElementById("");
 
 		// Data sorted on the player names
 		var dataSorted = playerNestData[k].values.sort(function(a,b) { 
@@ -136,6 +156,19 @@ function draw_lines() {
         		return true;
 	        }
         });
+
+    	var team = dataFiltered[0].team;
+		if (document.getElementById(team + "_" + k) == null) {
+    		var playerDiv = document.createElement('div');
+			playerDiv.id = team + "_" + k;
+			playerDiv.style.background = "#" + strokeColor;
+			playerDiv.style.marginRight = "10px";
+			playerDiv.style.marginTop = "5px";
+			playerDiv.style.opacity = "1.0";
+
+			var legendDiv = document.getElementById("legend_" + team + "_container");
+			legendDiv.appendChild(playerDiv);
+		}
 
         var teleportData = [];
         var regularWalkData = [];
@@ -207,6 +240,22 @@ function draw_lines() {
 		            .style("stroke-dasharray", "5, 10");
         }
 	}
+}
+
+function draw_legend() {
+	var vis = d3.select("#geoplot").select("svg");	
+	var width = vis.attr("width");
+    var height = vis.attr("height");
+
+    var container_2 = document.getElementById("container_2");
+    container_2.style.top = parseInt(height) + 20 + 'px';
+
+	var legend_dire_container = document.getElementById("legend_dire_container");
+	legend_dire_container.style.width = parseInt(width) - 20 + "px";
+	legend_dire_container.style.top = ((-1 * parseInt(height)) - 10) + "px";
+
+	var legend_radiant_container = document.getElementById("legend_radiant_container");
+	legend_radiant_container.style.width = parseInt(width) - 20 + "px";
 }
 
 function resizeGeoplot() {
