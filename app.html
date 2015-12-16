@@ -11,12 +11,8 @@
 		
 		<div class="container">
 			<div id="geoplot_container">
-		   		<div id="geoplot"><svg></svg></div>
-		   		<div id="legend_dire_container">
-		   			<div id="dire_text">Dire team:</div>
-		   		</div>
-		   		<div id="legend_radiant_container">
-		   			<div id="radiant_text">Radiant team:</div>
+		   		<div id="geoplot">
+		   			<svg></svg>
 		   		</div>
 			</div>
 			<div id="scatterplot">
@@ -32,6 +28,7 @@
 							<input type="radio" name="visualization" value="traces" onchange="changeSelection('geoplot');" id="radio_geoplot" checked> player traces
 							<input type="radio" name="visualization" value="heatmap" onchange="changeSelection('heatmap');" id="radio_heatmap" > heat map
 						</form>
+						 <button type="button" onclick="run();" id="runButton">Start</button> 
 	                </div>
 	            </div>
 	        </div>
