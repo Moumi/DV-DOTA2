@@ -15,16 +15,19 @@ function index_(x, y) {
   return xPos + (binSize * yPos);
 }
 
+var legendDrawn = false;
 function draw_heatmap() {
   if(show_heatmap) {
     init(); 
+    var temp = document.getElementById("scatterplot");
+    temp.style.marginBottom = "-2px";
     draw_heatmap_rects();
-    draw_heatmap_legend(); console.log("hoi");
+    draw_heatmap_legend();
   }
 }
 
 function draw_heatmap_rects() {
-  geoplotSvg.selectAll('rect').remove();
+  geoplotSvg.selectAll('.unit').remove();
 
   var dataHeatmap = [];
   for (var tsync in heatmapData) {
@@ -91,9 +94,10 @@ function draw_heatmap_rects() {
 }
 
 function draw_heatmap_legend() {
+  d3.selectAll(".legend").remove();
+  d3.selectAll("#geoLegendGradient").remove();
 
   var defs = geoplotSvg.select( "defs" );
-
   var legendMargin = {top: 6, right: 2};
 
   var legendGradient = defs.append( "linearGradient" )
@@ -167,6 +171,7 @@ function resizeHeatmap() {
 }
 
 function removeHeatmap() {
-  geoplotSvg.selectAll('rect').remove();
-  geoplotSvg.selectAll("#geoLegendGradient").remove()
+  geoplotSvg.selectAll('.unit').remove();
+  geoplotSvg.selectAll("#geoLegendGradient").remove();
+  legendDrawn = false;
 }

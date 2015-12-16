@@ -24,6 +24,8 @@ function draw_geoplot() {
 		init();	
 		draw_lines();
 		draw_legend();
+		var temp = document.getElementById("scatterplot");
+    	temp.style.marginBottom = "38px";
 	}
 }
 
@@ -62,9 +64,9 @@ function init() {
 		.range([viewHeight - offsetY1, offsetY2]);
 }
 
-function marker_start(color, val) 
+function marker_start(group, color, val) 
 {
-	geoplotSvg.append("defs").append("marker")
+	group.append("defs").append("marker")
 		.attr("id", val)
 		.attr("viewBox","-6 -6 12 12")
 		.attr("refX", 0)
@@ -80,9 +82,9 @@ function marker_start(color, val)
 	return "url(#" +val+ ")";
 }
 
-function marker_end(color, val) 
+function marker_end(group, color, val) 
 {
-	geoplotSvg.append("defs").append("marker")
+	group.append("defs").append("marker")
 		.attr("id", val)
 		.attr("viewBox","-10 0 10 10")
 		.attr("refX", 0)
@@ -104,6 +106,7 @@ function delete_mini_divs() {
 
 	for (var i = 0; i < team_text.length; i++) {
 		var divs = document.getElementById("legend_" + team_text[i] + "_container");
+		if (divs == null) continue;
 		while (divs.firstChild) {
 			var element = divs.firstChild;
 			if (element.id == team_text[i] + "_text") div_texts[i] = element;
@@ -165,15 +168,17 @@ function draw_lines() {
 
     	var team = dataFiltered[0].team;
 		if (document.getElementById(team + "_" + k) == null) {
-    		var playerDiv = document.createElement('div');
-			playerDiv.id = team + "_" + k;
-			playerDiv.style.background = "#" + strokeColor;
-			playerDiv.style.marginRight = "10px";
-			playerDiv.style.marginTop = "5px";
-			playerDiv.style.opacity = "1.0";
-
 			var legendDiv = document.getElementById("legend_" + team + "_container");
-			legendDiv.appendChild(playerDiv);
+			if (legendDiv != null) {
+	    		var playerDiv = document.createElement('div');
+				playerDiv.id = team + "_" + k;
+				playerDiv.style.background = "#" + strokeColor;
+				playerDiv.style.marginRight = "10px";
+				playerDiv.style.marginTop = "5px";
+				playerDiv.style.opacity = "1.0";
+
+				legendDiv.appendChild(playerDiv);
+			}
 		}
 
         var teleportData = [];
@@ -227,8 +232,8 @@ function draw_lines() {
 		        	.attr("stroke", "#" + strokeColor)
 					.attr("stroke-width", 2)
 					.attr("fill", "none")
-					.style("marker-start", marker_start("#" + strokeColor, "start_marker_" + k))
-					.style("marker-end", marker_end("#" + strokeColor, "end_marker_" + k));
+					.style("marker-start", marker_start(walkGroup, "#" + strokeColor, "start_marker_" + k))
+					.style("marker-end", marker_end(walkGroup, "#" + strokeColor, "end_marker_" + k));
         }
 
         var teleportGroup = playerGroup
@@ -253,15 +258,36 @@ function draw_legend() {
 	var width = vis.attr("width");
     var height = vis.attr("height");
 
-    var container_2 = document.getElementById("container_2");
-    container_2.style.top = parseInt(height) + 20 + 'px';
+    var geoplot_container = document.getElementById("geoplot_container");
 
 	var legend_dire_container = document.getElementById("legend_dire_container");
+	if (legend_dire_container == null) {
+		legend_dire_container = document.createElement('div');
+		legend_dire_container.id = "legend_dire_container";
+		geoplot_container.appendChild(legend_dire_container);
+
+		var dire_text = document.createElement('div');
+    	dire_text.id = "dire_text";
+    	dire_text.innerHTML = "Dire team:";
+    	legend_dire_container.appendChild(dire_text);
+	}
 	legend_dire_container.style.width = parseInt(width) - 20 + "px";
 	legend_dire_container.style.top = ((-1 * parseInt(height)) - 10) + "px";
 
 	var legend_radiant_container = document.getElementById("legend_radiant_container");
+	if (legend_radiant_container == null) {
+		legend_radiant_container = document.createElement('div');
+		legend_radiant_container.id = "legend_radiant_container";
+		geoplot_container.appendChild(legend_radiant_container);
+
+		var radiant_text = document.createElement('div');
+    	radiant_text.id = "radiant_text";
+    	radiant_text.innerHTML = "Radiant team:";
+    	legend_radiant_container.appendChild(radiant_text);
+	}
 	legend_radiant_container.style.width = parseInt(width) - 20 + "px";
+
+	draw_lines();
 }
 
 function resizeGeoplot() {
@@ -277,6 +303,8 @@ function resizeGeoplot() {
 
 function removeGeoplot()
 {
+	d3.selectAll("#legend_dire_container").remove();
+	d3.selectAll("#legend_radiant_container").remove();
 	geoplotSvg.selectAll("g").remove();
 	geoplotSvg.selectAll("defs").remove();
 	geoplotSvg.selectAll("marker").remove();

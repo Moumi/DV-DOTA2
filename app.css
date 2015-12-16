@@ -37,7 +37,7 @@ div#geoplot {
 }
 div#scatterplot {
     overflow: hidden;
-    margin-bottom: 35px;
+    margin-bottom: 38px;
 }
 div#geoplot_container {
   display: inline-block;
