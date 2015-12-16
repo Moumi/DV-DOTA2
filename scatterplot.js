@@ -216,6 +216,45 @@ function drawScatterplot(resetDomain) {
       .text("Dire");
 }
 
+function drawBrush() {
+  var offset = 10;
+  // define our brush extent to be begin and end of the year
+  brush.extent([brush.extent()[0] + offset, brush.extent()[1] + offset]);
+
+  // now draw the brush to match our extent
+  // use transition to slow it down so we can see what is happening
+  // remove transition so just d3.select(".brush") to just draw
+  brush(d3.select(".brush"));
+
+  // now fire the brushstart, brushmove, and brushend events
+  // remove transition so just d3.select(".brush") to just draw
+  brush.event(d3.select(".brush"));
+  if((brush.extent()[1] + offset) > x2.domain()[1]){
+    clearInterval(stop_running);
+    running = false;
+    document.getElementById("runButton").innerHTML = "Play";
+
+    brush.extent([0, 120]);
+    brush(d3.select(".brush"));
+    brush.event(d3.select(".brush"));
+  }
+}
+
+var running = false;
+var stop_running = false;
+function run() {
+if(!running){
+    stop_running = setInterval(drawBrush, 50);
+    running = true;
+    document.getElementById("runButton").innerHTML = "Pause";
+  }
+  else{
+    clearInterval(stop_running);
+    running = false;
+    document.getElementById("runButton").innerHTML = "Play";
+  }
+}
+
 brushed();
 function brushed() {
   x.domain(brush.empty() ? x2.domain() : brush.extent());

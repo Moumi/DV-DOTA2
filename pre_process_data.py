@@ -31,7 +31,7 @@ for i in range(1,48):
     if not Continue:
         break;
 
-    filename = '../Game/Data/master-zones-splitted/master-zones-'+str(i)+'.csv'
+    filename = '../Data/master-zones-'+str(i)+'.csv'
     with open(filename, 'rb') as csvfile:
         print " "+filename
         reader = csv.reader(csvfile)
@@ -53,8 +53,9 @@ for i in range(1,48):
 
 # Write a matches.js file which contains the names of all matches (to be read by combobox).
 print "Writing:"
-with open('data/matches.js', 'w') as outfile:
-    print " data/matches.js"
+filename = 'data/matches.js'
+with open(filename, 'w') as outfile:
+    print " "+filename
     outfile.write("matches = ")
     match_info = []
     for match in matches.keys():
@@ -66,8 +67,9 @@ with open('data/matches.js', 'w') as outfile:
 
 # write match data of each match to a seperate file.
 for match in matches:
-    with open('data/geoplot/'+str(match)+'.js', 'w') as outfile:
-        print " data/geoplot/"+str(match)+".js"
+    filename = 'data/geoplot/'+str(match)+'.js'
+    with open(filename, 'w') as outfile:
+        print " "+filename
         outfile.write("data = ")
         json.dump(matches[match][::5], outfile)
 
@@ -76,9 +78,10 @@ master_distance = dict()
 for match in matches:
     master_distance[match] = dict()
 
+filename = "../Data/master-distance.csv"
 print "Processing:"
-with open('../Game/Data/master-distance/master-distance.csv', 'rb') as csvfile:
-    print " master-distance/master-distance.csv"
+with open(filename, 'rb') as csvfile:
+    print " "+filename
     reader = csv.reader(csvfile)
     headers = reader.next() #[match   team   tsync   DD   Tier   Win Lose]
     types = ['int', 'string', 'int', 'float', 'string', 'int']
@@ -100,8 +103,9 @@ for match in master_distance:
     distances = {}
     distances["radiant"] = master_distance[match]["radiant"][::5]
     distances["dire"] = master_distance[match]["dire"][::5]
-    with open('data/distance/'+str(match)+'_master-distance.js', 'w') as outfile:
-        print " data/distance/"+str(match)+"_master-distance.js"
+    filename = 'data/distance/'+str(match)+'_master-distance.js'
+    with open(filename, 'w') as outfile:
+        print " "+filename
         outfile.write("distanceData = ")
         json.dump(distances, outfile)
 
@@ -129,8 +133,9 @@ for match in matches:
 
 print "Writing:"
 for match in heatmap:
-    with open('data/heatmap/'+str(match)+'.js', 'w') as outfile:
-        print " data/heatmap/"+str(match)+".js"
+    filename = 'data/heatmap/'+str(match)+'.js'
+    with open(filename, 'w') as outfile:
+        print " "+filename
         outfile.write("heatmapData = ")
         json.dump(heatmap[match], outfile)
 print "Collected data from:"
