@@ -67,7 +67,7 @@ function waitForDataLoad() {
     	oldDataLength = data.length;
     	
         redraw();
-        drawScatterplot();
+        drawScatterplot(true);
 
         resize(true);
     } else {
