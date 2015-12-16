@@ -116,6 +116,7 @@ function delete_mini_divs() {
 	}
 }
 
+var playerColor = d3.scale.category10();
 function draw_lines() {
 	// begin of drawing lines
 	geoplotSvg.selectAll("marker").remove();
@@ -149,7 +150,7 @@ function draw_lines() {
 		var playerName = playerNestData[k].key;
 
 		// Color for the line
-		var strokeColor = intToRGB(hashCode(playerName));
+		var strokeColor = playerColor(k); //intToRGB(hashCode(playerName));
 
 		// Change color of legend
 		// var mini_box = document.getElementById("");
@@ -172,10 +173,11 @@ function draw_lines() {
 			if (legendDiv != null) {
 	    		var playerDiv = document.createElement('div');
 				playerDiv.id = team + "_" + k;
-				playerDiv.style.background = "#" + strokeColor;
+				playerDiv.style.background = strokeColor;
 				playerDiv.style.marginRight = "10px";
 				playerDiv.style.marginTop = "5px";
 				playerDiv.style.opacity = "1.0";
+				playerDiv.style.border = "pink 1px solid";
 
 				legendDiv.appendChild(playerDiv);
 			}
@@ -229,11 +231,11 @@ function draw_lines() {
 	        	.append("path")
 		        	.attr("class", "line")
 		        	.attr("d", line(regularWalkData[i]))
-		        	.attr("stroke", "#" + strokeColor)
+		        	.attr("stroke", strokeColor)
 					.attr("stroke-width", 2)
 					.attr("fill", "none")
-					.style("marker-start", marker_start(walkGroup, "#" + strokeColor, "start_marker_" + k))
-					.style("marker-end", marker_end(walkGroup, "#" + strokeColor, "end_marker_" + k));
+					.style("marker-start", marker_start(walkGroup, strokeColor, "start_marker_" + k))
+					.style("marker-end", marker_end(walkGroup, strokeColor, "end_marker_" + k));
         }
 
         var teleportGroup = playerGroup
@@ -245,7 +247,7 @@ function draw_lines() {
 	        	.append("path")
 					.attr("class", "line-dashed")
 					.attr("d", line2(teleportData[i]))
-		        	.attr("stroke", "#" + strokeColor)
+		        	.attr("stroke", strokeColor)
 					.attr("stroke-width", 2)
 					.attr("fill", "none")
 		            .style("stroke-dasharray", "5, 10");
