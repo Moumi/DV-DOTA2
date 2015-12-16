@@ -48,6 +48,13 @@ function resize() {
   } else {
     resize(true);
   }
+
+  var vis = d3.select("#geoplot").select("svg");  
+  var width = vis.attr("width");
+  var height = vis.attr("height");
+
+  var container_2 = document.getElementById("container_2");
+  container_2.style.top = parseInt(height) + 20 + 'px';
 }
 
 function init() {
