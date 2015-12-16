@@ -1,6 +1,7 @@
 #!/bin/python
 import csv
 import json
+import os
 
 max_matches_per_tier = 5;
 tiers = {"Normal":0, "High":0, "VeryHigh":0, "Pro":0}
@@ -18,6 +19,15 @@ def get_entry(row, headers, value_ids, types):
             elif types[i] == 'string':
                 entry[headers[i]] = str(row[i])
     return entry
+
+if not os.path.exists("data"):
+    os.makedirs("data")
+if not os.path.exists("data/geoplot"):
+    os.makedirs("data/geoplot")
+if not os.path.exists("data/heatmap"):
+    os.makedirs("data/heatmap")
+if not os.path.exists("data/distance"):
+    os.makedirs("data/distance")
 
 headerstemp = []
 # Read match data from csv
